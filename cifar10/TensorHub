@@ -1,0 +1,34 @@
+#-*-conf-*-
+
+[project]
+
+name                    = ConvNet Tutorial
+
+[model]
+
+runtime                 = tensorflow
+train                   = cifar10_train
+evaluate                = cifar10_eval --run_once $EVAL_RUN_ONCE
+
+[flags]
+
+data_dir                = cifar10_data
+train_dir               = $LOGDIR/train
+checkpoint_dir          = $LOGDIR/train
+eval_dir                = $LOGDIR/test
+
+eval_interval_secs      = 60
+stats_interval          = 60
+
+batch_size              = 128
+max_steps               = 100000
+
+[flags "quick"]
+
+stats_interval          = 10
+max_steps               = 10000
+
+[flags "long"]
+
+stats_interval          = 120
+max_steps               = 1000000

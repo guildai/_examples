@@ -1,0 +1,16 @@
+#-*-conf-*-
+
+[project]
+
+name                    = MNIST Tutorial
+
+[model]
+
+runtime                 = tensorflow
+train                   = mnist_with_summaries --data_dir MNIST_data --summaries_dir=$LOGDIR
+
+[flags]
+
+max_steps               = 1000
+learning_rate           = 0.001
+dropout                 = 0.9
