@@ -1,0 +1,41 @@
+#-*-conf-*-
+
+[project]
+
+name                    = MNIST
+runroot                 = runs
+
+[model "intro"]
+
+runtime                 = tensorflow
+train                   = intro
+prepare                 = intro --prepare
+train_requires          = ./data
+evaluate                = intro --evaluate
+
+[model "expert"]
+
+runtime                 = tensorflow
+train                   = expert
+prepare                 = expert --prepare
+train_requires          = ./data
+evaluate                = expert --evaluate
+
+[flags]
+
+datadir                 = ./data
+rundir                  = $RUNDIR
+batch-size              = 100
+epochs                  = 2
+
+[view]
+
+fields                  = tf-validation-accuracy tf-train-accuracy \
+                          tf-steps tf-time
+
+series-a                = tf-loss tf-accuracy
+
+series-b                = op-cpu-percent op-memory
+
+compare-fields          = tf-validation-accuracy tf-train-accuracy \
+                          flag-batch-size tf-steps tf-time
