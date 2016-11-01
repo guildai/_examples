@@ -33,9 +33,9 @@ epochs                  = 2
 fields                  = tf-validation-accuracy tf-train-accuracy \
                           tf-steps tf-time
 
-series-a                = tf-loss tf-accuracy
-
-series-b                = op-cpu-percent op-memory
+series-b                = tf-loss tf-accuracy \
+			  op-cpu-percent op-memory \
+			  gpu-percent gpu-memory
 
 compare-fields          = tf-validation-accuracy tf-train-accuracy \
                           flag-batch-size tf-steps tf-time
