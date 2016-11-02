@@ -21,6 +21,11 @@ prepare                 = expert --prepare
 train_requires          = ./data
 evaluate                = expert --evaluate
 
+[model "samples"]
+
+runtime                 = tensorflow
+prepare                 = prepare_samples --sample-dir samples --sample-count 100
+
 [flags]
 
 datadir                 = ./data
