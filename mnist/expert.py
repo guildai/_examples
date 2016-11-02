@@ -68,7 +68,7 @@ def train(mnist):
     train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train",
                                           tf.get_default_graph())
     validation_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
-                                               
+
     # Session and variable init
     sess = tf.Session()
     sess.run(tf.initialize_all_variables())
@@ -91,7 +91,13 @@ def train(mnist):
         validation_writer.add_summary(validation_summary, step)
         print "%s (step %i): training=%f validation=%f" % (
             label, step, train_accuracy, validation_accuracy)
-        
+
+    saver = tf.train.Saver()
+    def save_model():
+        print "Saving trained model"
+        tf.gfile.MakeDirs(FLAGS.rundir + "/model")
+        saver.save(sess, FLAGS.rundir + "/model/export")
+
     # Batch training over all training examples per epoch
     steps = (mnist.train.num_examples / FLAGS.batch_size) * FLAGS.epochs
     for step in range(steps):
@@ -99,23 +105,24 @@ def train(mnist):
         sess.run(train, feed_dict={x: images, y_: labels})
         if step % 20 == 0:
             write_model_status("Batch", step, images, labels)
+        if step != 0 and step % (mnist.train.num_examples /
+                                 FLAGS.batch_size) == 0:
+            save_model()
 
     # Final status
-    write_model_status("Final", step + 1, mnist.train.images, mnist.train.labels)
+    write_model_status(
+        "Final", step + 1, mnist.train.images, mnist.train.labels)
 
     # Save trained model
     tf.add_to_collection("x", x.name)
     tf.add_to_collection("y_", y_.name)
     tf.add_to_collection("accuracy", accuracy.name)
-    saver = tf.train.Saver()
-    print "Saving trained model"
-    tf.gfile.MakeDirs(FLAGS.rundir)
-    saver.save(sess, FLAGS.rundir + "/export")
+    save_model()
 
 def evaluate(mnist):
     sess = tf.Session()
-    saver = tf.train.import_meta_graph(FLAGS.rundir + "/export.meta")
-    saver.restore(sess, FLAGS.rundir + "/export")
+    saver = tf.train.import_meta_graph(FLAGS.rundir + "/model/export.meta")
+    saver.restore(sess, FLAGS.rundir + "/model/export")
     accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
     x = sess.graph.get_tensor_by_name(tf.get_collection("x")[0])
     y_ = sess.graph.get_tensor_by_name(tf.get_collection("y_")[0])
@@ -143,5 +150,5 @@ if __name__ == '__main__':
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--evaluate", action="store_true")
-    FLAGS = parser.parse_args()
+    FLAGS, _ = parser.parse_known_args()
     tf.app.run()
