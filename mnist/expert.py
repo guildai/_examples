@@ -110,8 +110,8 @@ def train(mnist):
             save_model()
 
     # Final status
-    write_model_status(
-        "Final", step + 1, mnist.train.images, mnist.train.labels)
+    images, labels = mnist.train.next_batch(FLAGS.batch_size)
+    write_model_status("Final", step + 1, images, labels)
 
     # Save trained model
     tf.add_to_collection("x", x.name)
