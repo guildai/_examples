@@ -21,6 +21,11 @@ prepare                 = expert --prepare
 train_requires          = ./data
 evaluate                = expert --evaluate
 
+[model "tflearn-dnn"]
+
+runtime                 = tensorflow
+train                   = tflearn_dnn
+
 [model "samples"]
 
 runtime                 = tensorflow
@@ -44,3 +49,15 @@ series-b                = tf-loss tf-accuracy \
 
 compare-fields          = tf-validation-accuracy tf-train-accuracy \
                           flag-batch-size tf-steps tf-time
+
+[view "tflearn-dnn"]
+
+fields                  = tfl-validation-accuracy tfl-train-accuracy \
+                          tfl-steps tfl-time
+
+series-b                = tfl-loss tfl-accuracy \
+			  op-cpu-percent op-memory \
+			  gpu-percent gpu-memory
+
+compare-fields          = tfl-validation-accuracy tfl-train-accuracy \
+                          flag-batch-size tfl-steps tfl-time
