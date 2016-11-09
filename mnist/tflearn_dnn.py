@@ -14,7 +14,6 @@ Links:
 from __future__ import division, print_function, absolute_import
 
 import argparse
-
 import tflearn
 import tflearn.datasets.mnist as mnist
 
@@ -42,10 +41,7 @@ def train(flags):
         loss='categorical_crossentropy')
 
     # Training
-    model = tflearn.DNN(
-        net,
-        tensorboard_verbose=0,
-        tensorboard_dir=flags.rundir)
+    model = tflearn.DNN(net, tensorboard_dir=flags.rundir)
     model.fit(
         X, Y,
         n_epoch=flags.epochs,
