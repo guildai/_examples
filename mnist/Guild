@@ -26,11 +26,6 @@ evaluate                = expert --evaluate
 runtime                 = tensorflow
 train                   = tflearn_dnn
 
-[model "samples"]
-
-runtime                 = tensorflow
-prepare                 = prepare_samples --sample-dir samples --sample-count 100
-
 [flags]
 
 datadir                 = ./data
@@ -61,3 +56,8 @@ series-b                = tfl-loss tfl-accuracy \
 
 compare-fields          = tfl-validation-accuracy tfl-train-accuracy \
                           flag-batch-size tfl-steps tfl-time
+
+[model "samples"]
+
+runtime                 = tensorflow
+prepare                 = prepare_samples --sample-dir samples --sample-count 100
