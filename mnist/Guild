@@ -26,6 +26,11 @@ evaluate                = expert --evaluate
 runtime                 = tensorflow
 train                   = tflearn_dnn
 
+[model "tflearn-cnn"]
+
+runtime                 = tensorflow
+train                   = tflearn_cnn
+
 [flags]
 
 datadir                 = ./data
@@ -46,6 +51,18 @@ compare-fields          = tf-validation-accuracy tf-train-accuracy \
                           flag-batch-size tf-steps tf-time
 
 [view "tflearn-dnn"]
+
+fields                  = tfl-validation-accuracy tfl-train-accuracy \
+                          tfl-steps tfl-time
+
+series-b                = tfl-loss tfl-accuracy \
+			  op-cpu-percent op-memory \
+			  gpu-percent gpu-memory
+
+compare-fields          = tfl-validation-accuracy tfl-train-accuracy \
+                          flag-batch-size tfl-steps tfl-time
+
+[view "tflearn-cnn"]
 
 fields                  = tfl-validation-accuracy tfl-train-accuracy \
                           tfl-steps tfl-time
