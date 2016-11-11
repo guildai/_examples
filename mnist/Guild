@@ -2,79 +2,53 @@
 
 [project]
 
-name                    = MNIST
-runroot                 = runs
+name            = MNIST
+runroot         = runs
 
 [model "intro"]
 
-runtime                 = tensorflow
-train                   = intro
-prepare                 = intro --prepare
-train_requires          = ./data
-evaluate                = intro --evaluate
+runtime         = tensorflow
+train           = intro
+prepare         = intro --prepare
+train_requires  = ./data
+evaluate        = intro --evaluate
 
 [model "expert"]
 
-runtime                 = tensorflow
-train                   = expert
-prepare                 = expert --prepare
-train_requires          = ./data
-evaluate                = expert --evaluate
+runtime         = tensorflow
+train           = expert
+prepare         = expert --prepare
+train_requires  = ./data
+evaluate        = expert --evaluate
 
 [model "tflearn-dnn"]
 
-runtime                 = tensorflow
-train                   = tflearn_dnn
+runtime         = tflearn
+train           = tflearn_dnn
 
 [model "tflearn-cnn"]
 
-runtime                 = tensorflow
-train                   = tflearn_cnn
+runtime         = tflearn
+train           = tflearn_cnn
 
 [flags]
 
-datadir                 = ./data
-rundir                  = $RUNDIR
-batch-size              = 100
-epochs                  = 2
+datadir         = ./data
+rundir          = $RUNDIR
+batch-size      = 100
+epochs          = 2
 
 [view]
 
-fields                  = tf-validation-accuracy tf-train-accuracy \
-                          tf-steps tf-time
+fields           = validation-accuracy train-accuracy steps time
 
-series-b                = tf-loss tf-accuracy \
-			  op-cpu-percent op-memory \
-			  gpu-percent gpu-memory
+series-b         = loss accuracy op-cpu-percent op-memory \
+                   gpu-percent gpu-memory
 
-compare-fields          = tf-validation-accuracy tf-train-accuracy \
-                          flag-batch-size tf-steps tf-time
+compare          = validation-accuracy train-accuracy batch-size-flag \
+                  steps time
 
 [view "tflearn-dnn"]
 
-fields                  = tfl-validation-accuracy tfl-train-accuracy \
-                          tfl-steps tfl-time
-
-series-b                = tfl-loss tfl-accuracy \
-			  op-cpu-percent op-memory \
-			  gpu-percent gpu-memory
-
-compare-fields          = tfl-validation-accuracy tfl-train-accuracy \
-                          flag-batch-size tfl-steps tfl-time
-
-[view "tflearn-cnn"]
-
-fields                  = tfl-validation-accuracy tfl-train-accuracy \
-                          tfl-steps tfl-time
-
-series-b                = tfl-loss tfl-accuracy \
-			  op-cpu-percent op-memory \
-			  gpu-percent gpu-memory
-
-compare-fields          = tfl-validation-accuracy tfl-train-accuracy \
-                          flag-batch-size tfl-steps tfl-time
-
-[model "samples"]
-
-runtime                 = tensorflow
-prepare                 = prepare_samples --sample-dir samples --sample-count 100
+runtime         = tensorflow
+prepare         = prepare_samples --sample-dir samples --sample-count 100
