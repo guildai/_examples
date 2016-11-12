@@ -46,9 +46,13 @@ series-b         = loss accuracy op-cpu-percent op-memory \
                    gpu-percent gpu-memory
 
 compare          = validation-accuracy train-accuracy batch-size-flag \
-                  steps time
+                   steps time
 
-[view "tflearn-dnn"]
+[resource "samples"]
 
 runtime         = tensorflow
-prepare         = prepare_samples --sample-dir samples --sample-count 100
+prepare         = prepare_samples --sample-dir samples
+
+[flags "samples"]
+
+sample-count    = 100
