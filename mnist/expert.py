@@ -69,6 +69,10 @@ def train(mnist):
                                           tf.get_default_graph())
     validation_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
 
+    # Inputs/outputs for running exported model
+    tf.add_to_collection("inputs", json.dumps({"image": x.name}))
+    tf.add_to_collection("outputs", json.dumps({"prediction": y.name}))
+
     # Session and variable init
     sess = tf.Session()
     sess.run(tf.initialize_all_variables())
