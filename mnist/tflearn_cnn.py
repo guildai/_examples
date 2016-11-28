@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Convolutional Neural Network for MNIST dataset classification task.
+"""Convolutional Neural Network for MNIST dataset classification task.
 
 References:
     Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner. "Gradient-based
@@ -9,6 +9,9 @@ References:
 
 Links:
     [MNIST Dataset] http://yann.lecun.com/exdb/mnist/
+
+This code was original copied from
+https://raw.githubusercontent.com/tflearn/tflearn/master/examples/images/convnet_mnist.py
 
 """
 

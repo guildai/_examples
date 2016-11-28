@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-""" Deep Neural Network for MNIST dataset classification task.
+"""Deep Neural Network for MNIST dataset classification task.
 
 References:
     Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner. "Gradient-based
