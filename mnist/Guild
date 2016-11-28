@@ -21,16 +21,6 @@ prepare         = expert --prepare
 train_requires  = ./data
 evaluate        = expert --evaluate
 
-[model "tflearn-dnn"]
-
-runtime         = tflearn
-train           = tflearn_dnn
-
-[model "tflearn-cnn"]
-
-runtime         = tflearn
-train           = tflearn_cnn
-
 [flags]
 
 datadir         = ./data
