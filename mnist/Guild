@@ -51,7 +51,7 @@ compare          = validation-accuracy train-accuracy batch-size-flag \
 [resource "samples"]
 
 runtime         = tensorflow
-prepare         = prepare_samples --sample-dir samples
+prepare         = samples --sample-dir samples
 
 [flags "samples"]
 
