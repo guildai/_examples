@@ -1,0 +1,18 @@
+#-*-conf-*-
+
+[project]
+
+name            = CIFAR-10
+runroot         = runs
+
+[model "single"]
+
+runtime         = tensorflow
+prepare         = single --prepare
+train           = single
+train_requires  = CIFAR10_data/cifar-10-batches-bin
+evaluate        = single --evaluate
+
+[flags]
+
+datadir         = CIFAR10_data
