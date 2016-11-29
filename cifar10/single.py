@@ -12,20 +12,33 @@ FLAGS = None
 def train():
 
     # Training data
-    images, labels = support.inputs(
+    train_images, train_labels = support.inputs(
         FLAGS.datadir,
         support.TRAINING_DATA,
         FLAGS.batch_size)
 
+    # Validation data
+    validate_images, validate_labels = support.inputs(
+        FLAGS.datadir,
+        support.VALIDATION_DATA,
+        FLAGS.batch_size)
+
     # Model and training ops
-    predictions = support.inference(images, FLAGS.batch_size)
-    loss = support.loss(predictions, labels)
+    train_predict = support.inference(train_images, FLAGS.batch_size)
+    loss = support.loss(train_predict, train_labels)
     global_step = tf.Variable(0, trainable=False)
-    train = support.train(loss, FLAGS.batch_size, global_step)
+    train, learning_rate = support.train(loss, FLAGS.batch_size, global_step)
+
+    # Accuracy
+    train_accuracy = support.accuracy(train_predict, train_labels)
+    validate_predict = support.inference(validate_images, FLAGS.batch_size)
+    validate_accuracy = support.accuracy(validate_predict, validate_labels)
 
     # Summaries
     tf.scalar_summary("loss", loss)
-    summaries = tf.merge_all_summaries()
+    tf.scalar_summary("accuracy", train_accuracy)
+    tf.scalar_summary("learning_rate", learning_rate)
+    train_summaries = tf.merge_all_summaries()
     train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
 
     # Initialize session
@@ -37,30 +50,27 @@ def train():
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
     # Helper to log status
-    def train_and_log():
-        _, loss_, summaries_ = sess.run([train, loss, summaries])
-        log_result(train_writer, step, loss_, summaries_)
+    def log_status(step):
+        loss_, summaries, accuracy = sess.run(
+            [loss, train_summaries, train_accuracy])
+        train_writer.add_summary(summaries, step)
+        print("Step %i: loss=%f accuracy=%s" % (step, loss_, accuracy))
 
     # Training loop
     steps = (support.TRAINING_IMAGES_COUNT // FLAGS.batch_size) * FLAGS.epochs
     step = 0
     while step < steps:
+        sess.run(train)
         if step % 20 == 0:
-            train_and_log()
-        else:
-            sess.run(train)
+            log_status(step)
         step += 1
 
     # Final status
-    train_and_log()
+    log_status(step)
 
     # Stop queue runners
     coord.request_stop()
     coord.join(threads)
-
-def log_result(writer, step, loss, summary):
-    writer.add_summary(summary, step)
-    print("Step %i: loss=%f" % (step, loss))
 
 def evaluate():
     print("TODO evaluate")

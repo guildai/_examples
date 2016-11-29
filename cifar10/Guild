@@ -23,12 +23,63 @@ train           = upstream_single
 datadir         = CIFAR10_data
 rundir          = $RUNDIR
 epochs          = 10
+batch_size      = 128
 
 [view]
 
-fields          = loss steps time
-series-a        = loss
-series-b        = op-cpu-percent op-memory gpu-percent gpu-memory gpu-powerdraw
+fields          = train-accuracy steps time
+
+series-a        = accuracy
+
+series-b        = loss learning-rate \
+                  op-cpu-percent op-memory \
+                  gpu-percent gpu-memory \
+                  gpu-powerdraw
+
+# Scroll down for upstream confg
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 [view "upstream-single"]
 

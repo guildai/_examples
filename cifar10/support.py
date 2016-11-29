@@ -27,7 +27,7 @@ INPUT_IMAGE_BYTES = IMAGE_HEIGHT * IMAGE_WIDTH * IMAGE_DEPTH
 INPUT_RECORD_BYTES = INPUT_LABEL_BYTES + INPUT_IMAGE_BYTES
 
 TRAINING_DATA = 1
-TEST_DATA = 2
+VALIDATION_DATA = 2
 
 QUEUE_RUNNER_THREADS = 16
 EPOCHS_PER_DECAY = 10
@@ -102,7 +102,7 @@ def input_filenames(data_dir, data_type):
     if data_type == TRAINING_DATA:
         return [os.path.join(data_dir, DATA_BIN_NAME, "data_batch_%i.bin" % i)
                 for i in range(1, 6)]
-    elif data_type == TEST_DATA:
+    elif data_type == VALIDATION_DATA:
         return [os.path.join(data_dir, DATA_BIN_NAME, "test_batch.bin")]
     else:
         raise ValueError(data_type)
@@ -189,4 +189,13 @@ def train(loss, batch_size, global_step):
         0.1, global_step, decay_steps, 0.1, staircase=True)
     optimizer = tf.train.GradientDescentOptimizer(lr)
     gradients = optimizer.compute_gradients(loss)
-    return optimizer.apply_gradients(gradients, global_step=global_step)
+    train = optimizer.apply_gradients(gradients, global_step=global_step)
+    return train, lr
+
+###################################################################
+# Accuracy
+###################################################################
+
+def accuracy(logits, labels):
+    top_k = tf.nn.in_top_k(logits, labels, 1)
+    return tf.reduce_mean(tf.cast(top_k, tf.float16))
