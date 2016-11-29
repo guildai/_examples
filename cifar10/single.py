@@ -90,7 +90,7 @@ def train():
     while step < train_steps:
         sess.run(train, feed_dict={validate_flag: False})
         if step % 20 == 0:
-            validate = step > 0 and step % steps_per_epoch == 0
+            validate = step % steps_per_epoch == 0
             log_status(step, validate)
         step += 1
 

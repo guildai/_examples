@@ -36,6 +36,8 @@ series-b        = loss learning-rate \
                   gpu-percent gpu-memory \
                   gpu-powerdraw
 
+compare         = validation-accuracy train-accuracy epochs-flag time
+
 # Scroll down for upstream confg
 
 
