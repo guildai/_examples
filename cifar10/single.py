@@ -11,50 +11,56 @@ FLAGS = None
 
 def train():
 
+    # Training data
     images, labels = support.inputs(
         FLAGS.datadir,
         support.TRAINING_DATA,
         FLAGS.batch_size)
 
+    # Model and training ops
     predictions = support.inference(images, FLAGS.batch_size)
-
     loss = support.loss(predictions, labels)
+    global_step = tf.Variable(0, trainable=False)
+    train = support.train(loss, FLAGS.batch_size, global_step)
 
-    train = support.train(loss, FLAGS.batch_size)
+    # Summaries
+    tf.scalar_summary("loss", loss)
+    summaries = tf.merge_all_summaries()
+    train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
 
-    with training_session(loss) as session:
-        while not session.should_stop():
-            session.run(train)
+    # Initialize session
+    sess = tf.Session()
+    sess.run(tf.global_variables_initializer())
 
-def training_session(loss):
-    steps = support.TRAINING_IMAGES_COUNT * FLAGS.epochs
-    hooks = [
-        tf.train.StopAtStepHook(last_step=steps),
-        tf.train.NanTensorHook(loss),
-        TrainLogHook(loss)
-    ]
-    train_dir = os.path.join(FLAGS.rundir, "train")
-    return tf.train.MonitoredTrainingSession(
-        checkpoint_dir=train_dir,
-        hooks=hooks)
+    # Initialize queue runners
+    coord = tf.train.Coordinator()
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-class TrainLogHook(tf.train.SessionRunHook):
+    # Helper to log status
+    def train_and_log():
+        _, loss_, summaries_ = sess.run([train, loss, summaries])
+        log_result(train_writer, step, loss_, summaries_)
 
-    def __init__(self, loss):
-        super(TrainLogHook, self).__init__()
-        self.loss = loss
+    # Training loop
+    steps = (support.TRAINING_IMAGES_COUNT // FLAGS.batch_size) * FLAGS.epochs
+    step = 0
+    while step < steps:
+        if step % 20 == 0:
+            train_and_log()
+        else:
+            sess.run(train)
+        step += 1
 
-    def begin(self):
-        self.step = -1
+    # Final status
+    train_and_log()
 
-    def before_run(self, context):
-        self.step += 1
-        return tf.train.SessionRunArgs(self.loss)
+    # Stop queue runners
+    coord.request_stop()
+    coord.join(threads)
 
-    def after_run(self, context, values):
-        if self.step % 20 == 0:
-            loss = values.results
-            print("Step %i: loss=%f" % (self.step, loss))
+def log_result(writer, step, loss, summary):
+    writer.add_summary(summary, step)
+    print("Step %i: loss=%f" % (step, loss))
 
 def evaluate():
     print("TODO evaluate")

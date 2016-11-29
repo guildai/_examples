@@ -175,7 +175,6 @@ def loss(logits, labels):
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits, tf.cast(labels, tf.int64))
     loss = tf.reduce_mean(cross_entropy)
-    tf.scalar_summary("loss", loss)
     tf.add_to_collection("losses", loss)
     return tf.add_n(tf.get_collection("losses"))
 
@@ -183,8 +182,7 @@ def loss(logits, labels):
 # Train
 ###################################################################
 
-def train(loss, batch_size):
-    global_step = tf.contrib.framework.create_global_step()
+def train(loss, batch_size, global_step):
     batches_per_epoch = TRAINING_IMAGES_COUNT // batch_size
     decay_steps = batches_per_epoch * EPOCHS_PER_DECAY
     lr = tf.train.exponential_decay(

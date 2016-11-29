@@ -16,15 +16,54 @@ evaluate        = single --evaluate
 [model "upstream-single"]
 
 runtime         = tensorflow
-train           = tensorflow.models.image.cifar10.cifar10_train
+train           = upstream_single
 
 [flags]
 
 datadir         = CIFAR10_data
 rundir          = $RUNDIR
+epochs          = 10
 
 [view]
 
 fields          = loss steps time
 series-a        = loss
 series-b        = op-cpu-percent op-memory gpu-percent gpu-memory gpu-powerdraw
+
+[view "upstream-single"]
+
+fields          = upstream_loss upstream_steps upstream_time
+series-a        = upstream_loss
+series-b        = op-cpu-percent op-memory gpu-percent gpu-memory gpu-powerdraw
+
+[field "upstream_loss"]
+
+source          = series/tf/train/total_loss
+reduce          = last_5_average
+label           = Loss
+format          = 0.00
+color           = red-700
+
+[field "upstream_steps"]
+
+source          = series/tf/train/total_loss
+reduce          = steps
+label           = Steps
+icon            = steps
+format          = 0,0
+color           = blue-700
+
+[field "upstream_time"]
+
+source          = series/tf/train/total_loss
+reduce          = duration
+label           = Time
+icon            = time
+format          = 00:00:00
+color           = yellow-700
+
+[series "upstream_loss"]
+
+source          = series/tf/train/total_loss
+title           = Loss
+format          = 0.00
