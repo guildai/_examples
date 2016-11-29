@@ -13,6 +13,18 @@ train           = single
 train_requires  = CIFAR10_data/cifar-10-batches-bin
 evaluate        = single --evaluate
 
+[model "upstream-single"]
+
+runtime         = tensorflow
+train           = tensorflow.models.image.cifar10.cifar10_train
+
 [flags]
 
 datadir         = CIFAR10_data
+rundir          = $RUNDIR
+
+[view]
+
+fields          = loss steps time
+series-a        = loss
+series-b        = op-cpu-percent op-memory gpu-percent gpu-memory gpu-powerdraw

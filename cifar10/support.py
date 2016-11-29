@@ -6,11 +6,14 @@ import sys
 import tarfile
 import urllib
 
+import tensorflow as tf
+
 DATA_URL = "http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz"
 DATA_BIN_NAME = "cifar-10-batches-bin"
 
 TRAINING_IMAGES_COUNT = 50000
 TEST_IMAGES_COUNT = 10000
+CLASS_COUNT = 10
 
 IMAGE_HEIGHT = 32
 IMAGE_WIDTH = 32
@@ -27,6 +30,7 @@ TRAINING_DATA = 1
 TEST_DATA = 2
 
 QUEUE_RUNNER_THREADS = 16
+EPOCHS_PER_DECAY = 10
 
 ###################################################################
 # Download data
@@ -38,19 +42,18 @@ def ensure_data(data_dir):
         return
     data_tar = os.path.join(data_dir, DATA_URL.split("/")[-1])
     if not os.path.exists(data_tar):
-        _download_data()
+        download_data(data_tar)
     print("Extracting files from", data_tar)
     tarfile.open(data_tar, "r:gz").extractall(data_dir)
 
-def _download_data(dest):
+def download_data(dest):
     dest_dir = os.path.dirname(dest)
     if not os.path.exists(dest_dir):
         os.makedirs(dest_dir)
     def progress(count, block_size, total_size):
         sys.stdout.write(
             '\r>> Downloading %s %.1f%%'
-            % (data_tar,
-               float(count * block_size) / float(total_size) * 100.0))
+            % (dest, count * block_size / total_size * 100.0))
         sys.stdout.flush()
     urllib.urlretrieve(DATA_URL, dest, progress)
     print()
@@ -64,14 +67,14 @@ def _download_data(dest):
 def inputs(data_dir, data_type, batch_size):
 
     # Input file reader
-    filenames = _input_filenames(data_dir, data_type)
-    queue = tf.train.string_input_produce(filenames)
+    filenames = input_filenames(data_dir, data_type)
+    queue = tf.train.string_input_producer(filenames)
     reader = tf.FixedLengthRecordReader(record_bytes=INPUT_RECORD_BYTES)
 
     # Decode label and image
     _key, record_raw = reader.read(queue)
     record = tf.decode_raw(record_raw, tf.uint8)
-    label = tf.cast(tf.slice(record, [0], [INPUT_LABEL_BYTES]), tf.uint32)
+    label = tf.cast(tf.slice(record, [0], [INPUT_LABEL_BYTES]), tf.int32)
     image = tf.reshape(
         tf.slice(record, [INPUT_LABEL_BYTES], [INPUT_IMAGE_BYTES]),
         [IMAGE_DEPTH, IMAGE_HEIGHT, IMAGE_WIDTH])
@@ -88,18 +91,19 @@ def inputs(data_dir, data_type, batch_size):
     image_standardized = tf.image.per_image_standardization(image_resized)
 
     # Process image and labels using queue runner
-    return tf.train.batch(
+    images, labels = tf.train.batch(
         [image_standardized, label],
         batch_size=batch_size,
         num_threads=QUEUE_RUNNER_THREADS,
         capacity=10 * batch_size)
+    return images, tf.reshape(labels, [batch_size])
 
-def _input_filenames(data_dir, data_type):
+def input_filenames(data_dir, data_type):
     if data_type == TRAINING_DATA:
-        return [os.path.join(data_dir, "data_batch_%i" % i)
+        return [os.path.join(data_dir, DATA_BIN_NAME, "data_batch_%i.bin" % i)
                 for i in range(1, 6)]
     elif data_type == TEST_DATA:
-        return [os.path.join(data_dir, "test_batch.bin")]
+        return [os.path.join(data_dir, DATA_BIN_NAME, "test_batch.bin")]
     else:
         raise ValueError(data_type)
 
@@ -125,18 +129,19 @@ def inference(images, batch_size):
 
     # First locally connected layer
     h_pool2_flat = tf.reshape(h_pool2, [batch_size, -1])
-    W_local1 = weight_variable([h_pool2_flat.get_shape()[1].value, -1])
+    dim = h_pool2_flat.get_shape()[1].value
+    W_local1 = weight_variable([dim, 384], 0.04, 0.004)
     b_local1 = bias_variable([384], 0.1)
     h_local1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_local1) + b_local1)
 
     # Second locally connected layer
     W_local2 = weight_variable([384, 192], 0.04, 0.004)
-    b_local2 = bias_variable([192])
+    b_local2 = bias_variable([192], 0.1)
     h_local2 = tf.nn.relu(tf.matmul(h_local1, W_local2) + b_local2)
 
     # Output layer
-    W_out = weight_variable([192, CLASSES_COUNT], 1/192.0)
-    b_out = bias_variable([CLASSES_COUNT], 0.0)
+    W_out = weight_variable([192, CLASS_COUNT], 1 / 192)
+    b_out = bias_variable([CLASS_COUNT], 0.0)
     output = tf.matmul(h_local2, W_out) + b_out
 
     return output
@@ -149,7 +154,7 @@ def weight_variable(shape, stddev, decay=None):
     return W
 
 def bias_variable(shape, initial_value):
-    return tf.Variable(tf.constant(initial_value, shape))
+    return tf.Variable(tf.constant(initial_value, shape=shape))
 
 def conv2d(x, W):
     return tf.nn.conv2d(x, W, [1, 1, 1, 1], padding="SAME")
@@ -170,6 +175,7 @@ def loss(logits, labels):
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits, tf.cast(labels, tf.int64))
     loss = tf.reduce_mean(cross_entropy)
+    tf.scalar_summary("loss", loss)
     tf.add_to_collection("losses", loss)
     return tf.add_n(tf.get_collection("losses"))
 
@@ -179,7 +185,8 @@ def loss(logits, labels):
 
 def train(loss, batch_size):
     global_step = tf.contrib.framework.create_global_step()
-    batches_per_epoch = TRAINING_IMAGES_COUNT / batch_size
+    batches_per_epoch = TRAINING_IMAGES_COUNT // batch_size
+    decay_steps = batches_per_epoch * EPOCHS_PER_DECAY
     lr = tf.train.exponential_decay(
         0.1, global_step, decay_steps, 0.1, staircase=True)
     optimizer = tf.train.GradientDescentOptimizer(lr)

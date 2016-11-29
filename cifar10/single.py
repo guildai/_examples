@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import os
 
 import tensorflow as tf
 
@@ -11,7 +12,7 @@ FLAGS = None
 def train():
 
     images, labels = support.inputs(
-        FLAGS.data_dir,
+        FLAGS.datadir,
         support.TRAINING_DATA,
         FLAGS.batch_size)
 
@@ -32,10 +33,10 @@ def training_session(loss):
         tf.train.NanTensorHook(loss),
         TrainLogHook(loss)
     ]
+    train_dir = os.path.join(FLAGS.rundir, "train")
     return tf.train.MonitoredTrainingSession(
-        checkpoint_dir=FLAGS.rundir + "/train",
-        hooks=hooks,
-        config=config)
+        checkpoint_dir=train_dir,
+        hooks=hooks)
 
 class TrainLogHook(tf.train.SessionRunHook):
 
@@ -53,7 +54,7 @@ class TrainLogHook(tf.train.SessionRunHook):
     def after_run(self, context, values):
         if self.step % 20 == 0:
             loss = values.results
-            print("Step %i: loss=%f" % (self.step, loss)
+            print("Step %i: loss=%f" % (self.step, loss))
 
 def evaluate():
     print("TODO evaluate")
