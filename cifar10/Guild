@@ -23,11 +23,11 @@ train           = upstream_single
 datadir         = CIFAR10_data
 rundir          = $RUNDIR
 epochs          = 10
-batch_size      = 128
+batch_size      = 100
 
 [view]
 
-fields          = train-accuracy steps time
+fields          = validation-accuracy train-accuracy steps time
 
 series-a        = accuracy
 

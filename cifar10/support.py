@@ -12,7 +12,7 @@ DATA_URL = "http://www.cs.toronto.edu/~kriz/cifar-10-binary.tar.gz"
 DATA_BIN_NAME = "cifar-10-batches-bin"
 
 TRAINING_IMAGES_COUNT = 50000
-TEST_IMAGES_COUNT = 10000
+VALIDATION_IMAGES_COUNT = 10000
 CLASS_COUNT = 10
 
 IMAGE_HEIGHT = 32
@@ -99,11 +99,12 @@ def inputs(data_dir, data_type, batch_size):
     return images, tf.reshape(labels, [batch_size])
 
 def input_filenames(data_dir, data_type):
+    def data_path(name):
+        return os.path.join(data_dir, DATA_BIN_NAME, name)
     if data_type == TRAINING_DATA:
-        return [os.path.join(data_dir, DATA_BIN_NAME, "data_batch_%i.bin" % i)
-                for i in range(1, 6)]
+        return [data_path("data_batch_%i.bin" % i) for i in range(1, 6)]
     elif data_type == VALIDATION_DATA:
-        return [os.path.join(data_dir, DATA_BIN_NAME, "test_batch.bin")]
+        return [data_path("test_batch.bin")]
     else:
         raise ValueError(data_type)
 
@@ -111,7 +112,9 @@ def input_filenames(data_dir, data_type):
 # Inference
 ###################################################################
 
-def inference(images, batch_size):
+def inference(train_images, validate_images, batch_size, validate):
+
+    images = tf.cond(validate, lambda: validate_images, lambda: train_images)
 
     # First convolutional layer
     W_conv1 = weight_variable([5, 5, 3, 64], 0.05)
@@ -196,6 +199,7 @@ def train(loss, batch_size, global_step):
 # Accuracy
 ###################################################################
 
-def accuracy(logits, labels):
+def accuracy(logits, train_labels, validate_labels, validate):
+    labels = tf.cond(validate, lambda: validate_labels, lambda: train_labels)
     top_k = tf.nn.in_top_k(logits, labels, 1)
     return tf.reduce_mean(tf.cast(top_k, tf.float16))
