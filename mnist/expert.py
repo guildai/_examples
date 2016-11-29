@@ -65,8 +65,7 @@ def train(mnist):
     tf.scalar_summary("loss", loss)
     tf.scalar_summary("accuracy", accuracy)
     summaries = tf.merge_all_summaries()
-    train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train",
-                                          tf.get_default_graph())
+    train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
     validation_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
 
     # Inputs/outputs for running exported model
@@ -75,10 +74,10 @@ def train(mnist):
 
     # Session and variable init
     sess = tf.Session()
-    sess.run(tf.initialize_all_variables())
+    sess.run(tf.global_variables_initializer())
 
-    # Helper to write log performance
-    def write_model_status(step, train_images, train_labels):
+    # Helper to log performance
+    def log_model_status(step, train_images, train_labels):
         train_data = {
             x: train_images,
             y_: train_labels
@@ -103,19 +102,19 @@ def train(mnist):
         saver.save(sess, FLAGS.rundir + "/model/export")
 
     # Batch training over all training examples per epoch
-    steps = (mnist.train.num_examples / FLAGS.batch_size) * FLAGS.epochs
+    steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
     for step in range(steps):
         images, labels = mnist.train.next_batch(FLAGS.batch_size)
         sess.run(train, feed_dict={x: images, y_: labels})
         if step % 20 == 0:
-            write_model_status(step, images, labels)
+            log_model_status(step, images, labels)
         if step != 0 and step % (mnist.train.num_examples /
                                  FLAGS.batch_size) == 0:
             save_model()
 
     # Final status
     images, labels = mnist.train.next_batch(FLAGS.batch_size)
-    write_model_status(step + 1, images, labels)
+    log_model_status(step + 1, images, labels)
 
     # Save trained model
     tf.add_to_collection("x", x.name)
