@@ -78,7 +78,7 @@ def train(mnist):
     sess.run(tf.initialize_all_variables())
 
     # Helper to write log performance
-    def write_model_status(label, step, train_images, train_labels):
+    def write_model_status(step, train_images, train_labels):
         train_data = {
             x: train_images,
             y_: train_labels
@@ -93,8 +93,8 @@ def train(mnist):
         validation_accuracy, validation_summary = \
             sess.run([accuracy, summaries], feed_dict=validation_data)
         validation_writer.add_summary(validation_summary, step)
-        print "%s (step %i): training=%f validation=%f" % (
-            label, step, train_accuracy, validation_accuracy)
+        print "Step %i: training=%f validation=%f" % (
+            step, train_accuracy, validation_accuracy)
 
     saver = tf.train.Saver()
     def save_model():
@@ -108,14 +108,14 @@ def train(mnist):
         images, labels = mnist.train.next_batch(FLAGS.batch_size)
         sess.run(train, feed_dict={x: images, y_: labels})
         if step % 20 == 0:
-            write_model_status("Batch", step, images, labels)
+            write_model_status(step, images, labels)
         if step != 0 and step % (mnist.train.num_examples /
                                  FLAGS.batch_size) == 0:
             save_model()
 
     # Final status
     images, labels = mnist.train.next_batch(FLAGS.batch_size)
-    write_model_status("Final", step + 1, images, labels)
+    write_model_status(step + 1, images, labels)
 
     # Save trained model
     tf.add_to_collection("x", x.name)
