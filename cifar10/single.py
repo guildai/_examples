@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import json
 import os
 
 import numpy as np
@@ -24,6 +25,8 @@ def train():
         support.VALIDATION_DATA,
         FLAGS.batch_size)
 
+    images = tf.placeholder(tf.float32, [None, 24, 24, 3])
+
     # Model and training ops
     validate_flag = tf.placeholder(tf.bool, ())
     predict = support.inference(
@@ -43,6 +46,10 @@ def train():
     summaries = tf.merge_all_summaries()
     train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
     validate_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
+
+    # Inputs/outputs for running exported model
+    tf.add_to_collection("inputs", json.dumps({"image": images.name}))
+    tf.add_to_collection("outputs", json.dumps({"prediction": predict.name}))
 
     # Initialize session
     sess = tf.Session()
@@ -83,15 +90,24 @@ def train():
         validate_writer.flush()
         print(" validation=%f" % validation_accuracy, end="")
 
+    # Helper to save model
+    saver = tf.train.Saver()
+    def save_model():
+        print("Saving trained model")
+        tf.gfile.MakeDirs(FLAGS.rundir + "/model")
+        saver.save(sess, FLAGS.rundir + "/model/export")
+
     # Training loop
     steps_per_epoch = support.TRAINING_IMAGES_COUNT // FLAGS.batch_size
-    train_steps = steps_per_epoch * FLAGS.epochs
+    steps = steps_per_epoch * FLAGS.epochs
     step = 0
-    while step < train_steps:
+    while step < steps:
         sess.run(train, feed_dict={validate_flag: False})
         if step % 20 == 0:
             validate = step % steps_per_epoch == 0
             log_status(step, validate)
+        if step % steps_per_epoch == 0:
+            save_model()
         step += 1
 
     # Final status
