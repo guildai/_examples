@@ -40,7 +40,7 @@ def train(mnist):
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    # Helper to log performance
+    # Helper to log status
     def log_model_status(step, train_images, train_labels):
         train_data = {
             x: train_images,
@@ -59,21 +59,22 @@ def train(mnist):
         print "Step %i: training=%f validation=%f" % (
             step, train_accuracy, validation_accuracy)
 
+    # Helper to save model
     saver = tf.train.Saver()
     def save_model():
         print "Saving trained model"
         tf.gfile.MakeDirs(FLAGS.rundir + "/model")
         saver.save(sess, FLAGS.rundir + "/model/export")
 
-    # Batch training over all training examples per epoch
-    steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
+    # Training loop
+    steps_per_epoch = mnist.train.num_examples // FLAGS.batch_size
+    steps = steps_per_epoch * FLAGS.epochs
     for step in range(steps):
         images, labels = mnist.train.next_batch(FLAGS.batch_size)
         sess.run(train, feed_dict={x: images, y_: labels})
         if step % 20 == 0:
             log_model_status(step, images, labels)
-        if step != 0 and step % (mnist.train.num_examples /
-                                 FLAGS.batch_size) == 0:
+        if step % steps_per_epoch == 0:
             save_model()
 
     # Final status
