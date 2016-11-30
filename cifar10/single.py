@@ -13,31 +13,30 @@ FLAGS = None
 
 def train():
 
+    # Input placeholders
+    images, labels = support.placeholder_inputs()
+
     # Training data
-    train_images, train_labels = support.inputs(
+    train_images, train_labels = support.data_inputs(
         FLAGS.datadir,
         support.TRAINING_DATA,
         FLAGS.batch_size)
 
     # Validation data
-    validate_images, validate_labels = support.inputs(
+    validate_images, validate_labels = support.data_inputs(
         FLAGS.datadir,
         support.VALIDATION_DATA,
         FLAGS.batch_size)
 
-    images = tf.placeholder(tf.float32, [None, 24, 24, 3])
-
     # Model and training ops
     validate_flag = tf.placeholder(tf.bool, ())
-    predict = support.inference(
-        train_images, validate_images, FLAGS.batch_size, validate_flag)
+    predict = support.inference(images)
     loss = support.loss(predict, train_labels)
     global_step = tf.Variable(0, trainable=False)
-    train, learning_rate = support.train(loss, FLAGS.batch_size, global_step)
+    train, learning_rate = support.train(loss, global_step, FLAGS.batch_size)
 
     # Accuracy
-    accuracy = support.accuracy(
-        predict, train_labels, validate_labels, validate_flag)
+    accuracy = support.accuracy(predict, labels)
 
     # Summaries
     tf.scalar_summary("loss", loss)
@@ -59,38 +58,24 @@ def train():
     coord = tf.train.Coordinator()
     threads = tf.train.start_queue_runners(sess=sess, coord=coord)
 
-    # Helpers to log status
-    def log_status(train_step, validate=False):
-        print("Step %i:" % train_step, end="")
-        log_train_status(train_step)
-        if validate:
-            log_validate_status(train_step)
+    def next_batch(source_images, source_labels):
+        batch_images, batch_labels = sess.run([source_images, source_labels])
+        return {
+            images: batch_images,
+            labels: batch_labels
+        }
+
+    def log_status(step, train_summary, train_accuracy,
+                   validate_summary=None, validate_accuracy=None):
+        train_writer.add_summary(train_summary, step)
+        print("Step %i: training=%f" % (step, train_accuracy), end="")
+        if validate_summary is not None:
+            validate_writer.add_summary(validate_summary, step)
+            validate_writer.flush()
+        if validate_accuracy is not None:
+            print(" validation=%f" % validate_accuracy, end="")
         print()
 
-    def log_train_status(step):
-        summaries_, accuracy_ = sess.run(
-            [summaries, accuracy],
-            feed_dict={validate_flag: False})
-        train_writer.add_summary(summaries_, step)
-        train_writer.flush()
-        print(" training=%f" % accuracy_, end="")
-
-    def log_validate_status(train_step):
-        accuracies = []
-        validate_steps = support.VALIDATION_IMAGES_COUNT // FLAGS.batch_size
-        step = 0
-        while step < validate_steps:
-            accuracy_ = sess.run(accuracy, feed_dict={validate_flag: True})
-            accuracies.append(accuracy_)
-            step += 1
-        validation_accuracy = float(np.mean(accuracies))
-        summary = tf.Summary()
-        summary.value.add(tag="accuracy", simple_value=validation_accuracy)
-        validate_writer.add_summary(summary, train_step)
-        validate_writer.flush()
-        print(" validation=%f" % validation_accuracy, end="")
-
-    # Helper to save model
     saver = tf.train.Saver()
     def save_model():
         print("Saving trained model")
@@ -101,17 +86,40 @@ def train():
     steps_per_epoch = support.TRAINING_IMAGES_COUNT // FLAGS.batch_size
     steps = steps_per_epoch * FLAGS.epochs
     step = 0
+    is_epoch = lambda: step % steps_per_epoch == 0
+    log_step = lambda: step % 20 == 0
     while step < steps:
-        sess.run(train, feed_dict={validate_flag: False})
-        if step % 20 == 0:
-            validate = step % steps_per_epoch == 0
-            log_status(step, validate)
-        if step % steps_per_epoch == 0:
+        _, train_summary, train_accuracy = sess.run(
+            [train, summaries, accuracy],
+            next_batch(train_images, train_labels))
+        if log_step():
+            if is_epoch():
+                validate_summary, validate_accuracy = sess.run(
+                    [summaries, accuracy],
+                    next_batch(validate_images, validate_labels))
+                log_status(
+                    step,
+                    train_summary, train_accuracy,
+                    validate_summary, validate_accuracy)
+            else:
+                log_status(step, train_summary, train_accuracy)
+        if is_epoch():
             save_model()
         step += 1
 
     # Final status
-    log_status(step, True)
+    train_summary, train_accuracy = sess.run(
+        [summaries, accuracy],
+        next_batch(train_images, train_labels))
+    validate_summary, validate_accuracy = sess.run(
+        [summaries, accuracy],
+        next_batch(validate_images, validate_labels))
+    log_status(
+        step, train_summary, train_accuracy,
+        validate_summary, validate_accuracy)
+
+    # Save final model
+    save_model()
 
     # Stop queue runners
     coord.request_stop()

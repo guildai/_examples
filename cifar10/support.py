@@ -64,7 +64,14 @@ def download_data(dest):
 # Inputs
 ###################################################################
 
-def inputs(data_dir, data_type, batch_size):
+def placeholder_inputs():
+    images = tf.placeholder(tf.float32,
+                            [None, CROPPED_IMAGE_HEIGHT,
+                             CROPPED_IMAGE_WIDTH, IMAGE_DEPTH])
+    labels = tf.placeholder(tf.int32, [None])
+    return images, labels
+
+def data_inputs(data_dir, data_type, batch_size):
 
     # Input file reader
     filenames = input_filenames(data_dir, data_type)
@@ -112,9 +119,7 @@ def input_filenames(data_dir, data_type):
 # Inference
 ###################################################################
 
-def inference(train_images, validate_images, batch_size, validate):
-
-    images = tf.cond(validate, lambda: validate_images, lambda: train_images)
+def inference(images):
 
     # First convolutional layer
     W_conv1 = weight_variable([5, 5, 3, 64], 0.05)
@@ -131,9 +136,8 @@ def inference(train_images, validate_images, batch_size, validate):
     h_pool2 = max_pool_3x3(h_norm2)
 
     # First locally connected layer
-    h_pool2_flat = tf.reshape(h_pool2, [batch_size, -1])
-    dim = h_pool2_flat.get_shape()[1].value
-    W_local1 = weight_variable([dim, 384], 0.04, 0.004)
+    h_pool2_flat = tf.reshape(h_pool2, [-1, 6 * 6 * 64])
+    W_local1 = weight_variable([6 * 6 * 64, 384], 0.04, 0.004)
     b_local1 = bias_variable([384], 0.1)
     h_local1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_local1) + b_local1)
 
@@ -145,9 +149,9 @@ def inference(train_images, validate_images, batch_size, validate):
     # Output layer
     W_out = weight_variable([192, CLASS_COUNT], 1 / 192)
     b_out = bias_variable([CLASS_COUNT], 0.0)
-    output = tf.matmul(h_local2, W_out) + b_out
+    y = tf.matmul(h_local2, W_out) + b_out
 
-    return output
+    return y
 
 def weight_variable(shape, stddev, decay=None):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
@@ -174,9 +178,8 @@ def lrn(x):
 # Loss
 ###################################################################
 
-def loss(logits, labels):
-    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-        logits, tf.cast(labels, tf.int64))
+def loss(y, y_):
+    cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(y , y_)
     loss = tf.reduce_mean(cross_entropy)
     tf.add_to_collection("losses", loss)
     return tf.add_n(tf.get_collection("losses"))
@@ -185,21 +188,20 @@ def loss(logits, labels):
 # Train
 ###################################################################
 
-def train(loss, batch_size, global_step):
+def train(loss, global_step, batch_size):
     batches_per_epoch = TRAINING_IMAGES_COUNT // batch_size
     decay_steps = batches_per_epoch * EPOCHS_PER_DECAY
-    lr = tf.train.exponential_decay(
+    learning_rate = tf.train.exponential_decay(
         0.1, global_step, decay_steps, 0.1, staircase=True)
-    optimizer = tf.train.GradientDescentOptimizer(lr)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
     gradients = optimizer.compute_gradients(loss)
     train = optimizer.apply_gradients(gradients, global_step=global_step)
-    return train, lr
+    return train, learning_rate
 
 ###################################################################
 # Accuracy
 ###################################################################
 
-def accuracy(logits, train_labels, validate_labels, validate):
-    labels = tf.cond(validate, lambda: validate_labels, lambda: train_labels)
-    top_k = tf.nn.in_top_k(logits, labels, 1)
-    return tf.reduce_mean(tf.cast(top_k, tf.float16))
+def accuracy(y, y_):
+    top_1 = tf.nn.in_top_k(y, y_, 1)
+    return tf.reduce_mean(tf.cast(top_1, tf.float16))
