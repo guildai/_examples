@@ -64,7 +64,13 @@ def download_data(dest):
 # Inputs
 ###################################################################
 
-def inputs(data_dir, data_type, batch_size):
+def placeholder_inputs():
+    images = tf.placeholder(tf.float32, [None, CROPPED_IMAGE_HEIGHT,
+                                         CROPPED_IMAGE_WIDTH, IMAGE_DEPTH])
+    labels = tf.placeholder(tf.int32, [None])
+    return images, labels
+
+def data_inputs(data_dir, data_type, batch_size):
 
     # Input file reader
     filenames = input_filenames(data_dir, data_type)
@@ -112,9 +118,7 @@ def input_filenames(data_dir, data_type):
 # Inference
 ###################################################################
 
-def inference(train_images, validate_images, validate):
-
-    images = tf.cond(validate, lambda: validate_images, lambda: train_images)
+def inference(images):
 
     # First convolutional layer
     W_conv1 = weight_variable([5, 5, 3, 64], 0.05)
@@ -184,21 +188,20 @@ def loss(logits, labels):
 # Train
 ###################################################################
 
-def train(loss, batch_size, global_step):
+def train(loss, global_step, batch_size):
     batches_per_epoch = TRAINING_IMAGES_COUNT // batch_size
     decay_steps = batches_per_epoch * EPOCHS_PER_DECAY
-    lr = tf.train.exponential_decay(
+    learning_rate = tf.train.exponential_decay(
         0.1, global_step, decay_steps, 0.1, staircase=True)
-    optimizer = tf.train.GradientDescentOptimizer(lr)
+    optimizer = tf.train.GradientDescentOptimizer(learning_rate)
     gradients = optimizer.compute_gradients(loss)
     train = optimizer.apply_gradients(gradients, global_step=global_step)
-    return train, lr
+    return train, learning_rate
 
 ###################################################################
 # Accuracy
 ###################################################################
 
-def accuracy(logits, train_labels, validate_labels, validate):
-    labels = tf.cond(validate, lambda: validate_labels, lambda: train_labels)
-    top_k = tf.nn.in_top_k(logits, labels, 1)
-    return tf.reduce_mean(tf.cast(top_k, tf.float16))
+def accuracy(logits, labels):
+    top_1 = tf.nn.in_top_k(logits, labels, 1)
+    return tf.reduce_mean(tf.cast(top_1, tf.float16))
