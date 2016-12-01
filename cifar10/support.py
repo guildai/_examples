@@ -29,7 +29,6 @@ INPUT_RECORD_BYTES = INPUT_LABEL_BYTES + INPUT_IMAGE_BYTES
 TRAINING_DATA = 1
 VALIDATION_DATA = 2
 
-QUEUE_RUNNER_THREADS = 16
 EPOCHS_PER_DECAY = 10
 
 ###################################################################
@@ -70,7 +69,7 @@ def placeholder_inputs():
     labels = tf.placeholder(tf.int32, [None])
     return images, labels
 
-def data_inputs(data_dir, data_type, batch_size):
+def data_inputs(data_dir, data_type, batch_size, runner_threads):
 
     # Input file reader
     filenames = input_filenames(data_dir, data_type)
@@ -100,7 +99,7 @@ def data_inputs(data_dir, data_type, batch_size):
     images, labels = tf.train.batch(
         [image_standardized, label],
         batch_size=batch_size,
-        num_threads=QUEUE_RUNNER_THREADS,
+        num_threads=runner_threads,
         capacity=10 * batch_size)
     return images, tf.reshape(labels, [batch_size])
 

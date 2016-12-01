@@ -13,17 +13,13 @@ train           = single
 train_requires  = CIFAR10_data/cifar-10-batches-bin
 evaluate        = single --evaluate
 
-[model "upstream-single"]
-
-runtime         = tensorflow
-train           = upstream_single
-
 [flags]
 
 datadir         = CIFAR10_data
 rundir          = $RUNDIR
 epochs          = 10
 batch_size      = 100
+runner_threads  = 4
 
 [view]
 
@@ -33,12 +29,18 @@ series-a        = accuracy
 
 series-b        = loss learning-rate \
                   op-cpu-percent op-memory \
-                  gpu-percent gpu-memory \
-                  gpu-powerdraw device-percent
+                  gpu-percent gpu-memory gpu-powerdraw \
+                  device-percent queues
 
 compare         = validation-accuracy train-accuracy epochs-flag time
 
-# Scroll down for upstream confg
+[series "input-queues"]
+
+source          = series/tf/train/.*queue.*
+title           = Input Queues
+format          = 0.0%
+
+# Scroll down for upstream confg (moved to reduce config noise)
 
 
 
@@ -82,6 +84,11 @@ compare         = validation-accuracy train-accuracy epochs-flag time
 
 
 
+
+[model "upstream-single"]
+
+runtime         = tensorflow
+train           = upstream_single
 
 [view "upstream-single"]
 

@@ -20,13 +20,15 @@ def train():
     train_images, train_labels = support.data_inputs(
         FLAGS.datadir,
         support.TRAINING_DATA,
-        FLAGS.batch_size)
+        FLAGS.batch_size,
+        FLAGS.runner_threads)
 
     # Validation data
     validate_images, validate_labels = support.data_inputs(
         FLAGS.datadir,
         support.VALIDATION_DATA,
-        FLAGS.batch_size)
+        FLAGS.batch_size,
+        FLAGS.runner_threads)
 
     # Model and training ops
     predict = support.inference(images)
@@ -142,7 +144,8 @@ def evaluate():
     validate_images, validate_labels = support.data_inputs(
         FLAGS.datadir,
         support.VALIDATION_DATA,
-        FLAGS.batch_size)
+        FLAGS.batch_size,
+        FLAGS.runner_threads)
 
     # Load model
     sess = tf.Session()
@@ -197,5 +200,6 @@ if __name__ == '__main__':
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--evaluate", action="store_true")
+    parser.add_argument("--runner-threads", type=int, default=4)
     FLAGS, _ = parser.parse_known_args()
     tf.app.run()
