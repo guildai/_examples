@@ -34,7 +34,7 @@ series-a        = accuracy
 series-b        = loss learning-rate \
                   op-cpu-percent op-memory \
                   gpu-percent gpu-memory \
-                  gpu-powerdraw
+                  gpu-powerdraw device-percent
 
 compare         = validation-accuracy train-accuracy epochs-flag time
 
