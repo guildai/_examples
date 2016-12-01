@@ -87,17 +87,16 @@ def data_inputs(data_dir, data_type, batch_size, runner_threads):
     # Transpose image from stored DHW to HWD
     image_hwd = tf.transpose(image, [1, 2, 0])
 
-    # Resize and standardize image
+    # Finalize image
     image_float = tf.cast(image_hwd, tf.float32)
-    image_resized = tf.image.resize_image_with_crop_or_pad(
-        image_float,
-        CROPPED_IMAGE_HEIGHT,
-        CROPPED_IMAGE_WIDTH)
-    image_standardized = tf.image.per_image_standardization(image_resized)
+    if data_type == TRAINING_DATA:
+        image_final = augmented_standardized_image(image_float)
+    else:
+        image_final = standardized_image(image_float)
 
     # Process image and labels using queue runner
     images, labels = tf.train.batch(
-        [image_standardized, label],
+        [image_final, label],
         batch_size=batch_size,
         num_threads=runner_threads,
         capacity=10 * batch_size)
@@ -112,6 +111,23 @@ def input_filenames(data_dir, data_type):
         return [data_path("test_batch.bin")]
     else:
         raise ValueError(data_type)
+
+def augmented_standardized_image(image_in):
+    image_cropped = tf.random_crop(
+        image_in,
+        [CROPPED_IMAGE_HEIGHT, CROPPED_IMAGE_WIDTH, IMAGE_DEPTH])
+    image_flipped = tf.image.random_flip_left_right(image_cropped)
+    image_bright = tf.image.random_brightness(image_flipped, max_delta=63)
+    image_contrast = tf.image.random_contrast(
+        image_bright, lower=0.2, upper=1.8)
+    return tf.image.per_image_standardization(image_contrast)
+
+def standardized_image(image_in):
+    image_cropped = tf.image.resize_image_with_crop_or_pad(
+        image_in,
+        CROPPED_IMAGE_HEIGHT,
+        CROPPED_IMAGE_WIDTH)
+    return tf.image.per_image_standardization(image_cropped)
 
 ###################################################################
 # Inference
