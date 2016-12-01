@@ -4,6 +4,7 @@
 
 name            = CIFAR-10
 runroot         = runs
+sources          = *.py
 
 [model "single"]
 
@@ -30,9 +31,10 @@ series-a        = accuracy
 series-b        = loss learning-rate \
                   op-cpu-percent op-memory \
                   gpu-percent gpu-memory gpu-powerdraw \
-                  device-percent queues
+                  device-percent input-queues
 
-compare         = validation-accuracy train-accuracy epochs-flag time
+compare         = validation-accuracy train-accuracy epochs-flag \
+                  steps time
 
 [series "input-queues"]
 
