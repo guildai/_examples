@@ -1,6 +1,7 @@
 from __future__ import print_function
 
 import argparse
+import json
 import os
 
 import numpy as np
@@ -12,7 +13,7 @@ FLAGS = None
 
 def train():
 
-    # Placeholder inputs
+    # Placeholders for inputs
     images, labels = support.placeholder_inputs()
 
     # Training data
@@ -43,6 +44,10 @@ def train():
     summaries = tf.merge_all_summaries()
     train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
     validate_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
+
+    # Inputs/outputs for running exported model
+    tf.add_to_collection("inputs", json.dumps({"image": images.name}))
+    tf.add_to_collection("outputs", json.dumps({"prediction": labels.name}))
 
     # Initialize session
     sess = tf.Session()
@@ -123,6 +128,9 @@ def train():
         validate_summary, validate_accuracy)
 
     # Save trained model
+    tf.add_to_collection("images", images.name)
+    tf.add_to_collection("labels", labels.name)
+    tf.add_to_collection("accuracy", accuracy.name)
     save_model()
 
     # Stop queue runners
@@ -130,7 +138,47 @@ def train():
     coord.join(threads)
 
 def evaluate():
-    print("TODO evaluate")
+    # Validation data
+    validate_images, validate_labels = support.data_inputs(
+        FLAGS.datadir,
+        support.VALIDATION_DATA,
+        FLAGS.batch_size)
+
+    # Load model
+    sess = tf.Session()
+    saver = tf.train.import_meta_graph(FLAGS.rundir + "/model/export.meta")
+    saver.restore(sess, FLAGS.rundir + "/model/export")
+
+    # Tensors used to evaluate
+    images = sess.graph.get_tensor_by_name(tf.get_collection("images")[0])
+    labels = sess.graph.get_tensor_by_name(tf.get_collection("labels")[0])
+    accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
+
+    # Initialize queue runners
+    coord = tf.train.Coordinator()
+    threads = tf.train.start_queue_runners(sess=sess, coord=coord)
+
+    # Evaluate loop
+    step = 0
+    steps = support.VALIDATION_IMAGES_COUNT // FLAGS.batch_size
+    validate_accuracy = 0.0
+    while step < steps:
+        batch_images, batch_labels = sess.run(
+            [validate_images, validate_labels])
+        batch_input = {
+            images: batch_images,
+            labels: batch_labels
+        }
+        batch_accuracy = sess.run(accuracy, batch_input)
+        validate_accuracy += batch_accuracy / steps
+        step += 1
+
+    # Print validation accuracy
+    print("Validation accuracy: %f" % validate_accuracy)
+
+    # Stop queue runners
+    coord.request_stop()
+    coord.join(threads)
 
 def main(_):
     support.ensure_data(FLAGS.datadir)
