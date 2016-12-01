@@ -112,7 +112,7 @@ def input_filenames(data_dir, data_type):
 # Inference
 ###################################################################
 
-def inference(train_images, validate_images, batch_size, validate):
+def inference(train_images, validate_images, validate):
 
     images = tf.cond(validate, lambda: validate_images, lambda: train_images)
 
@@ -131,9 +131,8 @@ def inference(train_images, validate_images, batch_size, validate):
     h_pool2 = max_pool_3x3(h_norm2)
 
     # First locally connected layer
-    h_pool2_flat = tf.reshape(h_pool2, [batch_size, -1])
-    dim = h_pool2_flat.get_shape()[1].value
-    W_local1 = weight_variable([dim, 384], 0.04, 0.004)
+    h_pool2_flat = tf.reshape(h_pool2, [-1, 6 * 6 * 64])
+    W_local1 = weight_variable([6 * 6 * 64, 384], 0.04, 0.004)
     b_local1 = bias_variable([384], 0.1)
     h_local1 = tf.nn.relu(tf.matmul(h_pool2_flat, W_local1) + b_local1)
 

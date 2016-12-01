@@ -26,8 +26,7 @@ def train():
 
     # Model and training ops
     validate_flag = tf.placeholder(tf.bool, ())
-    predict = support.inference(
-        train_images, validate_images, FLAGS.batch_size, validate_flag)
+    predict = support.inference(train_images, validate_images, validate_flag)
     loss = support.loss(predict, train_labels)
     global_step = tf.Variable(0, trainable=False)
     train, learning_rate = support.train(loss, FLAGS.batch_size, global_step)
