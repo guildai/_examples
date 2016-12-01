@@ -33,7 +33,7 @@ epochs          = 5
 fields           = validation-accuracy train-accuracy steps time
 
 series-b         = loss accuracy op-cpu-percent op-memory \
-                   gpu-percent gpu-memory
+                   gpu-percent gpu-memory gpu-powerdraw
 
 compare          = validation-accuracy train-accuracy batch-size-flag \
                    steps time
