@@ -19,6 +19,14 @@ model           = small
 data_path       = PTB_data/simple-examples/data
 save_path       = $RUNDIR/model
 
+[flags "medium"]
+
+model           = medium
+
+[flags "large"]
+
+model           = large
+
 [view]
 
 fields          = loss steps time
@@ -32,6 +40,7 @@ series-b        = op-cpu-percent op-memory \
 [field "loss"]
 
 source          = series/tf/model/Validation Loss
+label           = Validation Loss
 
 [field "steps"]
 
