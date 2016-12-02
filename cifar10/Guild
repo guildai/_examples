@@ -47,12 +47,6 @@ series-b        = loss learning-rate \
 compare         = validation-accuracy train-accuracy epochs-flag \
                   steps time
 
-[series "input-queues"]
-
-source          = series/tf/train/.*queue.*
-title           = Input Queues
-format          = 0.0%
-
 # Scroll down for upstream confg (moved to reduce config noise)
 
 
