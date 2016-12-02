@@ -29,8 +29,6 @@ INPUT_RECORD_BYTES = INPUT_LABEL_BYTES + INPUT_IMAGE_BYTES
 TRAINING_DATA = 1
 VALIDATION_DATA = 2
 
-EPOCHS_PER_DECAY = 10
-
 ###################################################################
 # Download data
 ###################################################################
@@ -203,15 +201,15 @@ def loss(logits, labels):
 # Train
 ###################################################################
 
-def train(loss, global_step, batch_size):
-    batches_per_epoch = TRAINING_IMAGES_COUNT // batch_size
-    decay_steps = batches_per_epoch * EPOCHS_PER_DECAY
-    learning_rate = tf.train.exponential_decay(
+def learning_rate(global_step, decay_steps):
+    return tf.train.exponential_decay(
         0.1, global_step, decay_steps, 0.1, staircase=True)
+
+def train(loss, learning_rate, global_step):
     optimizer = tf.train.GradientDescentOptimizer(learning_rate)
     gradients = optimizer.compute_gradients(loss)
     train = optimizer.apply_gradients(gradients, global_step=global_step)
-    return train, learning_rate
+    return train
 
 ###################################################################
 # Accuracy

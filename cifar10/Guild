@@ -21,6 +21,17 @@ rundir          = $RUNDIR
 epochs          = 10
 batch_size      = 100
 runner_threads  = 4
+decay_epochs    = 100
+
+[resource "samples"]
+
+runtime         = tensorflow
+prepare         = samples
+
+[flags "samples"]
+
+sample_count    = 100
+sample_dir      = samples
 
 [view]
 

@@ -30,11 +30,22 @@ def train():
         FLAGS.batch_size,
         FLAGS.runner_threads)
 
-    # Model and training ops
+    # Model
     predict = support.inference(images)
+
+    # Training loss
     loss = support.loss(predict, labels)
+
+    # Global step - syncs training and learning rate decay
     global_step = tf.Variable(0, trainable=False)
-    train, learning_rate = support.train(loss, global_step, FLAGS.batch_size)
+
+    # Learning rate (decays)
+    steps_per_epoch = support.TRAINING_IMAGES_COUNT // FLAGS.batch_size
+    decay_steps = steps_per_epoch * FLAGS.decay_epochs
+    learning_rate = support.learning_rate(global_step, decay_steps)
+
+    # Training op
+    train = support.train(loss, learning_rate, global_step)
 
     # Accuracy
     accuracy = support.accuracy(predict, labels)
@@ -49,7 +60,7 @@ def train():
 
     # Inputs/outputs for running exported model
     tf.add_to_collection("inputs", json.dumps({"image": images.name}))
-    tf.add_to_collection("outputs", json.dumps({"prediction": labels.name}))
+    tf.add_to_collection("outputs", json.dumps({"prediction": predict.name}))
 
     # Initialize session
     sess = tf.Session()
@@ -101,7 +112,6 @@ def train():
         saver.save(sess, FLAGS.rundir + "/model/export")
 
     # Training loop
-    steps_per_epoch = support.TRAINING_IMAGES_COUNT // FLAGS.batch_size
     steps = steps_per_epoch * FLAGS.epochs
     step = 0
     while step < steps:
@@ -196,10 +206,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--datadir", default="/tmp/CIFAR10_data",)
     parser.add_argument("--rundir", default="/tmp/CIFAR10_train")
-    parser.add_argument("--batch-size", type=int, default=100)
+    parser.add_argument("--batch_size", type=int, default=100)
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--evaluate", action="store_true")
-    parser.add_argument("--runner-threads", type=int, default=4)
+    parser.add_argument("--runner_threads", type=int, default=4)
+    parser.add_argument("--decay_epochs", type=int, default=20)
     FLAGS, _ = parser.parse_known_args()
     tf.app.run()
