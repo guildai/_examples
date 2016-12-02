@@ -1,0 +1,26 @@
+#!/bin/bash -eu
+
+data_dir="$1"
+data_url="http://www.fit.vutbr.cz/~imikolov/rnnlm/simple-examples.tgz"
+data_archive="$data_dir/simple-examples.tgz"
+unpacked_data="$data_dir/simple-examples"
+
+ensure-archive() {
+    if [ -e "$data_archive" ]; then
+        return
+    fi
+    mkdir -p "$data_dir"
+    echo "Downloading data archive"
+    curl -Lf "$data_url" > "$data_archive"
+}
+
+ensure-unpacked-data() {
+    if [ -e "$unpacked_data" ]; then
+        return
+    fi
+    ensure-archive
+    echo "Unpacking data archive"
+    tar -C "$data_dir" -xf "$data_archive"
+}
+
+ensure-unpacked-data
