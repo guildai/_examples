@@ -41,6 +41,7 @@ series-b        = op-cpu-percent op-memory \
 
 source          = series/tf/model/Validation Loss
 label           = Validation Loss
+format          = 0.0
 
 [field "steps"]
 
@@ -53,3 +54,4 @@ source          = series/tf/model/Model/global_step/sec
 [series "loss"]
 
 source          = series/tf/model/.+ Loss
+format          = 0.0
