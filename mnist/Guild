@@ -26,7 +26,10 @@ datadir         = ./data
 rundir          = $RUNDIR
 batch-size      = 100
 epochs          = 10
-stats_interval  = 5
+
+[flags "intro"]
+
+stats_interval  = 1
 
 [view]
 
