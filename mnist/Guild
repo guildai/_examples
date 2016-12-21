@@ -3,7 +3,6 @@
 [project]
 
 name            = MNIST
-runroot         = runs
 
 [model "intro"]
 
@@ -26,7 +25,7 @@ evaluate        = expert --evaluate
 datadir         = ./data
 rundir          = $RUNDIR
 batch-size      = 100
-epochs          = 5
+epochs          = 20
 
 [view]
 
