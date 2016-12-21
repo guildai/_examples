@@ -19,7 +19,8 @@ def train():
     # Training data
     train_images, train_labels = support.data_inputs(
         FLAGS.datadir,
-        support.TRAINING_DATA,
+        (support.AUGMENTED_TRAINING_DATA
+         if FLAGS.augment else support.TRAINING_DATA),
         FLAGS.batch_size,
         FLAGS.runner_threads)
 
@@ -212,5 +213,6 @@ if __name__ == '__main__':
     parser.add_argument("--evaluate", action="store_true")
     parser.add_argument("--runner_threads", type=int, default=4)
     parser.add_argument("--decay_epochs", type=int, default=20)
+    parser.add_argument("--augment", action="store_true")
     FLAGS, _ = parser.parse_known_args()
     tf.app.run()

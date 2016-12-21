@@ -27,7 +27,8 @@ INPUT_IMAGE_BYTES = IMAGE_HEIGHT * IMAGE_WIDTH * IMAGE_DEPTH
 INPUT_RECORD_BYTES = INPUT_LABEL_BYTES + INPUT_IMAGE_BYTES
 
 TRAINING_DATA = 1
-VALIDATION_DATA = 2
+AUGMENTED_TRAINING_DATA = 2
+VALIDATION_DATA = 3
 
 ###################################################################
 # Download data
@@ -87,7 +88,7 @@ def data_inputs(data_dir, data_type, batch_size, runner_threads):
 
     # Finalize image
     image_float = tf.cast(image_hwd, tf.float32)
-    if data_type == TRAINING_DATA:
+    if data_type == AUGMENTED_TRAINING_DATA:
         image_final = augmented_standardized_image(image_float)
     else:
         image_final = standardized_image(image_float)
