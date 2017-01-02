@@ -24,7 +24,7 @@ evaluate        = expert --evaluate
 
 datadir         = ./data
 rundir          = $RUNDIR
-batch-size      = 100
+batch_size      = 100
 epochs          = 10
 
 [flags "intro"]

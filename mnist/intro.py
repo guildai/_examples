@@ -113,7 +113,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--datadir", default="/tmp/MNIST_data",)
     parser.add_argument("--rundir", default="/tmp/MNIST_train")
-    parser.add_argument("--batch-size", type=int, default=100)
+    parser.add_argument("--batch_size", type=int, default=100)
     parser.add_argument("--epochs", type=int, default=1)
     parser.add_argument("--prepare", action="store_true")
     parser.add_argument("--evaluate", action="store_true")
