@@ -1,21 +1,17 @@
-# MNIST
+# CIFAR10
 
-This is a [Guild AI](http://guild.ai) example that defines two MNIST
-models:
-
-- **intro** - logistic regression
-- **expert** - convolutional neural network
-
-The terms *intro* and *expert* &mdash; along with the corresponding models
-themselves &mdash; are from TensorFlow's excellent
-[Introduction](https://www.tensorflow.org/get_started/).
+This is a [Guild AI](http://guild.ai) example that defines a CIFAR10
+model based on TensorFlow's excellent [Convolutional Neural
+Networks](https://www.tensorflow.org/tutorials/deep_cnn/) Guide.
 
 ## Project files
 
-- **[expert.py](expert.py)** - Implementation of the *expert* model
 - **[Guild](Guild)** - Guild project file ([more info](https://guild.ai/project-reference/))
-- **[intro.py](intro.py)** - Implementation of the *intro* model
 - **[samples.py](samples.py)** - Implementation of the *samples* resource
+- **[single.py](expert.py)** - Training script for single GPU
+- **[support.py](support.py)** - Shared code across training scripts
+- **[upstream_single.py](upstream_single.py)** - Wrapper to train
+  using the original TensorFlow (upstream) script for single GPU
 
 ## Requirements
 
@@ -30,24 +26,16 @@ $ git clone https://github.com/guildai/guild-examples.git
 
 ## Training
 
-Prepare and train the MNIST model:
+Prepare and train the CIFAR10 model:
 
 ``` bash
-$ cd guild-examples/mnist
+$ cd guild-examples/cifar10
 $ guild prepare
 $ guild train
 ```
 
-The `prepare` command downloads the MNIST data, which will be used for
-subsequent operations.
-
-This project is configured to train the `intro` model by trained. You
-can train `expert` by specifying it explicitly:
-
-``` bash
-# Alternatively train the expert model
-$ guild train expert
-```
+The `prepare` command downloads the CIFAR10 data, which will be used
+for subsequent operations.
 
 ## Viewing
 
