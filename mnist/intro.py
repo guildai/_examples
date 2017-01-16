@@ -26,11 +26,11 @@ def train(mnist):
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
     # Summaries
-    tf.scalar_summary("loss", loss)
-    tf.scalar_summary("accuracy", accuracy)
-    summaries = tf.merge_all_summaries()
-    train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
-    validation_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
+    tf.summary.scalar("loss", loss)
+    tf.summary.scalar("accuracy", accuracy)
+    summaries = tf.summary.merge_all()
+    train_writer = tf.summary.FileWriter(FLAGS.rundir + "/train")
+    validation_writer = tf.summary.FileWriter(FLAGS.rundir + "/validation")
 
     # Inputs/outputs for running exported model
     tf.add_to_collection("inputs", json.dumps({"image": x.name}))

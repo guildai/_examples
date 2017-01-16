@@ -193,7 +193,7 @@ def lrn(x):
 
 def loss(logits, labels):
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
-                       logits, labels)
+                       logits=logits, labels=labels)
     loss = tf.reduce_mean(cross_entropy)
     tf.add_to_collection("losses", loss)
     return tf.add_n(tf.get_collection("losses"))

@@ -52,12 +52,12 @@ def train():
     accuracy = support.accuracy(predict, labels)
 
     # Summaries
-    tf.scalar_summary("loss", loss)
-    tf.scalar_summary("accuracy", accuracy)
-    tf.scalar_summary("learning_rate", learning_rate)
-    summaries = tf.merge_all_summaries()
-    train_writer = tf.train.SummaryWriter(FLAGS.rundir + "/train")
-    validate_writer = tf.train.SummaryWriter(FLAGS.rundir + "/validation")
+    tf.summary.scalar("loss", loss)
+    tf.summary.scalar("accuracy", accuracy)
+    tf.summary.scalar("learning_rate", learning_rate)
+    summaries = tf.summary.merge_all()
+    train_writer = tf.summary.FileWriter(FLAGS.rundir + "/train")
+    validate_writer = tf.summary.FileWriter(FLAGS.rundir + "/validation")
 
     # Inputs/outputs for running exported model
     tf.add_to_collection("inputs", json.dumps({"image": images.name}))

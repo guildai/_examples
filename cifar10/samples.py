@@ -14,7 +14,7 @@ def prepare_samples(images_op, labels_op):
     inputs = tf.placeholder(tf.float32, [None, support.CROPPED_IMAGE_HEIGHT,
                                          support.CROPPED_IMAGE_WIDTH,
                                          support.IMAGE_DEPTH])
-    summary = tf.image_summary('input', inputs, 1)
+    summary = tf.summary.image('input', inputs, 1)
 
     # Init session
     sess = tf.Session()
@@ -28,13 +28,13 @@ def prepare_samples(images_op, labels_op):
     i = 1
     for image, label in zip(images, labels):
         summary_bin = sess.run(summary, feed_dict={inputs: [image]})
-        image_summary = summary_pb2.Summary()
-        image_summary.ParseFromString(summary_bin)
+        summary.image = summary_pb2.Summary()
+        summary.image.ParseFromString(summary_bin)
         basename = FLAGS.sample_dir + "/" + ("%05i" % i)
         image_path = basename + ".png"
         print "Writing %s" % image_path
         with open(image_path, "w") as f:
-            f.write(image_summary.value[0].image.encoded_image_string)
+            f.write(summary.image.value[0].image.encoded_image_string)
         with open(basename + ".json", "w") as f:
             f.write(json.dumps({
                 "image": image.tolist(),

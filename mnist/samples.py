@@ -12,7 +12,7 @@ FLAGS = None
 def prepare_samples(mnist):
     inputs = tf.placeholder(tf.float32, [None, 784])
     shaped_inputs = tf.reshape(inputs, [-1, 28, 28, 1])
-    summary = tf.image_summary('input', shaped_inputs, 1)
+    summary = tf.summary.image('input', shaped_inputs, 1)
 
     sess = tf.Session()
     tf.gfile.MakeDirs(FLAGS.sample_dir)
@@ -21,13 +21,13 @@ def prepare_samples(mnist):
     i = 1
     for image, label in zip(images, labels):
         summary_bin = sess.run(summary, feed_dict={inputs: [image]})
-        image_summary = summary_pb2.Summary()
-        image_summary.ParseFromString(summary_bin)
+        summary.image = summary_pb2.Summary()
+        summary.image.ParseFromString(summary_bin)
         basename = FLAGS.sample_dir + "/" + ("%05i" % i)
         image_path = basename + ".png"
         print "Writing %s" % image_path
         with open(image_path, "w") as f:
-            f.write(image_summary.value[0].image.encoded_image_string)
+            f.write(summary.image.value[0].image.encoded_image_string)
         with open(basename + ".json", "w") as f:
             f.write(json.dumps({
                 "image": image.tolist(),
