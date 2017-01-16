@@ -8,7 +8,7 @@ Networks](https://www.tensorflow.org/tutorials/deep_cnn/) Guide.
 
 - **[Guild](Guild)** - Guild project file ([more info](https://guild.ai/project-reference/))
 - **[samples.py](samples.py)** - Implementation of the *samples* resource
-- **[single.py](expert.py)** - Training script for single GPU
+- **[single.py](single.py)** - Training script for single GPU
 - **[support.py](support.py)** - Shared code across training scripts
 - **[upstream_single.py](upstream_single.py)** - Wrapper to train
   using the original TensorFlow (upstream) script for single GPU
@@ -75,12 +75,12 @@ run.
 ## Generating sample inputs
 
 This example provides a `samples` resource that can be used to
-generate a number of MNIST images and their corresponding JSON
+generate a number of CIFAR10 images and their corresponding JSON
 encodings. These file can be used to run ad hoc inference on the model
 in Guild View (see the **Serve** tab) or Guild Serve
 (see [Serving](#user-content-serving) above).
 
-Images are generated from the MNIST training/test data.
+Images are generated from the CIFAR10 training/test data.
 
 To generate samples, run:
 
