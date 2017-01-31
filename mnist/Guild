@@ -3,6 +3,7 @@
 [project]
 
 name            = MNIST
+description     = Guild MNIST example
 
 [model "intro"]
 
