@@ -4,6 +4,7 @@
 
 name            = MNIST
 description     = Guild MNIST example
+tags            = MNIST CNN Example
 
 [model "intro"]
 

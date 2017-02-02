@@ -4,6 +4,7 @@
 
 name            = CIFAR-10
 description     = Guild CIFAR-10 example
+tags            = CIFAR-10 CNN Example
 runroot         = runs
 sources          = *.py
 
