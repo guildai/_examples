@@ -89,12 +89,25 @@ def init_eval_op():
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 def init_summaries():
-    global summaries, train_writer, validation_writer
+    init_inputs_summary()
+    init_op_summaries()
+    init_summary_writers()
+
+def init_inputs_summary():
+    tf.summary.image("inputs", tf.reshape(x, [-1, 28, 28, 1]), 10)
+
+def init_op_summaries():
     tf.summary.scalar("loss", loss)
     tf.summary.scalar("accuracy", accuracy)
+
+def init_summary_writers():
+    global summaries, train_writer, validation_writer
     summaries = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(FLAGS.rundir + "/train")
-    validation_writer = tf.summary.FileWriter(FLAGS.rundir + "/validation")
+    train_writer = tf.summary.FileWriter(
+        FLAGS.rundir + "/train",
+        tf.get_default_graph())
+    validation_writer = tf.summary.FileWriter(
+        FLAGS.rundir + "/validation")
 
 def init_collections():
     tf.add_to_collection("inputs", json.dumps({"image": x.name}))
