@@ -29,15 +29,11 @@ rundir          = $RUNDIR
 batch_size      = 100
 epochs          = 10
 
-[flags "intro"]
-
-stats_interval  = 1
-
 [view]
 
 fields           = validation-accuracy train-accuracy steps time
 
-series-b         = loss accuracy op-cpu-percent op-memory \
+series           = loss accuracy op-cpu-percent op-memory \
                    gpu-percent gpu-memory gpu-powerdraw
 
 compare          = validation-accuracy train-accuracy batch-size-flag \
