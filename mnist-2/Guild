@@ -8,7 +8,6 @@ tags            = MNIST CNN Example
 
 [model "intro"]
 
-runtime         = tensorflow
 train           = intro
 prepare         = intro --prepare
 train_requires  = ./data
@@ -16,7 +15,6 @@ evaluate        = intro --test
 
 [model "expert"]
 
-runtime         = tensorflow
 train           = expert
 prepare         = expert --prepare
 train_requires  = ./data
@@ -41,7 +39,6 @@ compare          = validation-accuracy train-accuracy batch-size-flag \
 
 [resource "samples"]
 
-runtime         = tensorflow
 prepare         = samples --sample-dir samples
 
 [flags "samples"]
