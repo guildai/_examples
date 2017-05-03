@@ -8,19 +8,17 @@ tags            = MNIST CNN Example
 
 [model "intro"]
 
-runtime         = tensorflow
 train           = intro
 prepare         = intro --prepare
 train_requires  = ./data
-evaluate        = intro --evaluate
+evaluate        = intro --test
 
 [model "expert"]
 
-runtime         = tensorflow
 train           = expert
 prepare         = expert --prepare
 train_requires  = ./data
-evaluate        = expert --evaluate
+evaluate        = expert --test
 
 [flags]
 
@@ -29,15 +27,11 @@ rundir          = $RUNDIR
 batch_size      = 100
 epochs          = 10
 
-[flags "intro"]
-
-stats_interval  = 1
-
 [view]
 
 fields           = validation-accuracy train-accuracy steps time
 
-series-b         = loss accuracy op-cpu-percent op-memory \
+series           = loss accuracy op-cpu-percent op-memory \
                    gpu-percent gpu-memory gpu-powerdraw
 
 compare          = validation-accuracy train-accuracy batch-size-flag \
@@ -45,7 +39,6 @@ compare          = validation-accuracy train-accuracy batch-size-flag \
 
 [resource "samples"]
 
-runtime         = tensorflow
 prepare         = samples --sample-dir samples
 
 [flags "samples"]

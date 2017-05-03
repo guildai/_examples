@@ -5,117 +5,153 @@ import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
 
-FLAGS = None
+def init_flags():
+    global FLAGS
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--datadir", default="/tmp/MNIST_data",)
+    parser.add_argument("--rundir", default="/tmp/MNIST_train")
+    parser.add_argument("--batch_size", type=int, default=100)
+    parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--prepare", dest='just_data', action="store_true")
+    parser.add_argument("--test", action="store_true")
+    FLAGS, _ = parser.parse_known_args()
 
-def train(mnist):
+def init_data():
+    global mnist
+    mnist = input_data.read_data_sets(FLAGS.datadir, one_hot=True)
 
-    # Softmax regression model
+def init_train():
+    init_model()
+    init_train_op()
+    init_eval_op()
+    init_summaries()
+    init_collections()
+    init_session()
+
+def init_model():
+    global x, y, W, b
     x = tf.placeholder(tf.float32, [None, 784])
     W = tf.Variable(tf.zeros([784, 10]))
     b = tf.Variable(tf.zeros([10]))
     y = tf.nn.softmax(tf.matmul(x, W) + b)
 
-    # Training operation
+def init_train_op():
+    global y_, loss, train_op
     y_ = tf.placeholder(tf.float32, [None, 10])
-    loss = tf.reduce_mean(-tf.reduce_sum(y_ * tf.log(y),
-                                         reduction_indices=[1]))
-    train = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
+    loss = tf.reduce_mean(
+             -tf.reduce_sum(
+               y_ * tf.log(y),
+               reduction_indices=[1]))
+    train_op = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
 
-    # Evaluation operation
+def init_eval_op():
+    global accuracy
     correct_prediction = tf.equal(tf.argmax(y, 1), tf.argmax(y_, 1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
-    # Summaries
+def init_summaries():
+    init_inputs_summary()
+    init_variable_summaries(W, "weights")
+    init_variable_summaries(b, "biases")
+    init_op_summaries()
+    init_summary_writers()
+
+def init_inputs_summary():
+    tf.summary.image("inputs", tf.reshape(x, [-1, 28, 28, 1]), 10)
+
+def init_variable_summaries(var, name):
+    with tf.name_scope(name):
+        mean = tf.reduce_mean(var)
+        tf.summary.scalar("mean", mean)
+        stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
+        tf.summary.scalar("stddev", stddev)
+        tf.summary.scalar("max", tf.reduce_max(var))
+        tf.summary.scalar("min", tf.reduce_min(var))
+        tf.summary.histogram(name, var)
+
+def init_op_summaries():
     tf.summary.scalar("loss", loss)
     tf.summary.scalar("accuracy", accuracy)
-    summaries = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(FLAGS.rundir + "/train")
-    validation_writer = tf.summary.FileWriter(FLAGS.rundir + "/validation")
 
-    # Inputs/outputs for running exported model
+def init_summary_writers():
+    global summaries, train_writer, validation_writer
+    summaries = tf.summary.merge_all()
+    train_writer = tf.summary.FileWriter(
+        FLAGS.rundir + "/train",
+        tf.get_default_graph())
+    validation_writer = tf.summary.FileWriter(
+        FLAGS.rundir + "/validation")
+
+def init_collections():
     tf.add_to_collection("inputs", json.dumps({"image": x.name}))
     tf.add_to_collection("outputs", json.dumps({"prediction": y.name}))
+    tf.add_to_collection("x", x.name)
+    tf.add_to_collection("y_", y_.name)
+    tf.add_to_collection("accuracy", accuracy.name)
 
-    # Session and variable init
+def init_session():
+    global sess
     sess = tf.Session()
     sess.run(tf.global_variables_initializer())
 
-    # Helper to log performance
-    def log_model_status(step, train_images, train_labels):
-        train_data = {
-            x: train_images,
-            y_: train_labels
-        }
-        train_accuracy, train_summary = \
-            sess.run([accuracy, summaries], feed_dict=train_data)
-        train_writer.add_summary(train_summary, step)
+def train():
+    steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
+    for step in range(steps + 1):
+        images, labels = mnist.train.next_batch(FLAGS.batch_size)
+        batch = {x: images, y_: labels}
+        sess.run(train_op, batch)
+        maybe_log_accuracy(step, batch)
+        maybe_save_model(step)
+
+def maybe_log_accuracy(step, last_training_batch):
+    if step % 20 == 0:
+        evaluate(step, last_training_batch, train_writer, "training")
         validation_data = {
             x: mnist.validation.images,
             y_: mnist.validation.labels
         }
-        validation_accuracy, validation_summary = \
-            sess.run([accuracy, summaries], feed_dict=validation_data)
-        validation_writer.add_summary(validation_summary, step)
-        print "Step %i: training=%f validation=%f" % (
-            step, train_accuracy, validation_accuracy)
+        evaluate(step, validation_data, validation_writer, "validation")
 
-    saver = tf.train.Saver()
-    def save_model():
-        print "Saving trained model"
-        tf.gfile.MakeDirs(FLAGS.rundir + "/model")
-        saver.save(sess, FLAGS.rundir + "/model/export")
+def evaluate(step, data, writer, name):
+    accuracy_val, summary = sess.run([accuracy, summaries], data)
+    writer.add_summary(summary, step)
+    print "Step %i: %s=%f" % (step, name, accuracy_val)
 
-    # Batch training over all training examples per epoch
-    steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
-    for step in range(steps):
-        images, labels = mnist.train.next_batch(FLAGS.batch_size)
-        sess.run(train, feed_dict={x: images, y_: labels})
-        if step % 20 == 0:
-            log_model_status(step, images, labels)
-        if step != 0 and step % (mnist.train.num_examples /
-                                 FLAGS.batch_size) == 0:
-            save_model()
+def maybe_save_model(step):
+    epoch_step = mnist.train.num_examples / FLAGS.batch_size
+    if step != 0 and step % epoch_step == 0:
+        save_model()
 
-    # Final status
-    images, labels = mnist.train.next_batch(FLAGS.batch_size)
-    log_model_status(step + 1, images, labels)
+def save_model():
+    print "Saving trained model"
+    tf.gfile.MakeDirs(FLAGS.rundir + "/model")
+    tf.train.Saver().save(sess, FLAGS.rundir + "/model/export")
 
-    # Save trained model
-    tf.add_to_collection("x", x.name)
-    tf.add_to_collection("y_", y_.name)
-    tf.add_to_collection("accuracy", accuracy.name)
-    save_model()
+def init_test():
+    init_session()
+    init_exported_collections()
 
-def evaluate(mnist):
-    sess = tf.Session()
+def init_exported_collections():
+    global x, y_, accuracy
     saver = tf.train.import_meta_graph(FLAGS.rundir + "/model/export.meta")
     saver.restore(sess, FLAGS.rundir + "/model/export")
-    accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
     x = sess.graph.get_tensor_by_name(tf.get_collection("x")[0])
     y_ = sess.graph.get_tensor_by_name(tf.get_collection("y_")[0])
-    test_data = {
-        x: mnist.test.images,
-        y_: mnist.test.labels
-    }
-    test_accuracy = sess.run(accuracy, feed_dict=test_data)
-    print "Test accuracy: %f" % test_accuracy
+    accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
 
-def main(_):
-    mnist = input_data.read_data_sets(FLAGS.datadir, one_hot=True)
-    if FLAGS.prepare:
+def test():
+    data = {x: mnist.test.images, y_: mnist.test.labels}
+    test_accuracy = sess.run(accuracy, data)
+    print "Test accuracy=%f" % test_accuracy
+
+if __name__ == "__main__":
+    init_flags()
+    init_data()
+    if FLAGS.just_data:
         pass
-    elif FLAGS.evaluate:
-        evaluate(mnist)
+    elif FLAGS.test:
+        init_test()
+        test()
     else:
-        train(mnist)
-
-if __name__ == '__main__':
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--datadir", default="/tmp/MNIST_data",)
-    parser.add_argument("--rundir", default="/tmp/MNIST_train")
-    parser.add_argument("--batch_size", type=int, default=100)
-    parser.add_argument("--epochs", type=int, default=1)
-    parser.add_argument("--prepare", action="store_true")
-    parser.add_argument("--evaluate", action="store_true")
-    FLAGS, _ = parser.parse_known_args()
-    tf.app.run()
+        init_train()
+        train()
