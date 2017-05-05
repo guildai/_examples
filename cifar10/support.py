@@ -169,7 +169,7 @@ def inference(images):
 def weight_variable(shape, stddev, decay=None):
     W = tf.Variable(tf.truncated_normal(shape, stddev=stddev))
     if decay is not None:
-        loss = tf.mul(tf.nn.l2_loss(W), decay)
+        loss = tf.multiply(tf.nn.l2_loss(W), decay)
         tf.add_to_collection("losses", loss)
     return W
 

@@ -39,9 +39,7 @@ sample_dir      = samples
 
 fields          = validation-accuracy train-accuracy steps time
 
-series-a        = accuracy
-
-series-b        = loss learning-rate \
+series          = accuracy loss learning-rate \
                   op-cpu-percent op-memory \
                   gpu-percent gpu-memory gpu-powerdraw \
                   device-percent input-queues
