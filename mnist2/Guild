@@ -1,0 +1,153 @@
+#-*-conf-*-
+
+###################################################################
+# Project / flags
+###################################################################
+
+[project]
+
+name = MNIST
+description = Guild MNIST example
+
+[flags]
+
+datadir = ./data
+rundir = $RUNDIR
+batch_size = 100
+epochs = 10
+
+###################################################################
+# Models
+###################################################################
+
+[model "intro"]
+
+train = intro
+prepare = intro --prepare
+train_requires = ./data
+evaluate = intro --test
+
+[model "expert"]
+
+train = expert
+prepare = expert --prepare
+train_requires = ./data
+evaluate = expert --test
+
+###################################################################
+# Resources
+###################################################################
+
+[resource "samples"]
+
+prepare = samples --sample-dir samples
+
+[flags "samples"]
+
+sample-count = 100
+
+###################################################################
+# Fields
+###################################################################
+
+[field "validation-accuracy"]
+
+template = accuracy-field
+source = series/tf/validation/accuracy
+label = Validation Accuracy
+
+[field "train-accuracy"]
+
+template = accuracy-field
+source = series/tf/train/accuracy
+label = Training Accuracy
+color = teal-400
+
+[field "steps"]
+
+template = steps-field
+source = series/tf/train/loss
+
+[field "time"]
+
+template = time-field
+source = series/tf/train/loss
+template = time-field
+
+###################################################################
+# Series
+###################################################################
+
+[series "loss"]
+
+template = loss-series
+source = series/tf/train/loss
+
+[series "accuracy"]
+
+template = accuracy-series
+source = series/tf/.+/accuracy
+
+[series "op-cpu-percent"]
+
+template = percent-util-series
+source = series/op/cpu/util
+title = Process CPU %
+
+[series "op-memory"]
+
+template = memory-series
+source = series/op/mem/rss
+title = Process Memory
+
+[series "gpu-percent"]
+
+template = percent-util-series
+source = series/sys/gpu.*/gpu/util
+title = GPU %
+
+[series "gpu-memory"]
+
+template = memory-series
+source = series/sys/gpu.*/mem/used
+title = GPU Memory
+
+###################################################################
+# Compare fields
+###################################################################
+
+[compare-field "validation-accuracy"]
+
+fieldref = validation-accuracy
+
+[compare-field "train-accuracy"]
+
+fieldref = train-accuracy
+
+[compare-field "batch-size"]
+
+label = Batch Size
+source = flags
+attribute = batch_size
+
+[compare-field "steps"]
+
+fieldref = steps
+
+[compare-field "time"]
+
+fieldref = time
+
+###################################################################
+# View def (deprecated)
+###################################################################
+
+[view]
+
+fields = validation-accuracy train-accuracy steps time
+
+series = loss accuracy op-cpu-percent op-memory \
+         gpu-percent gpu-memory
+
+compare = validation-accuracy train-accuracy batch-size-flag \
+          steps time
