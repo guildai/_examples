@@ -8,6 +8,7 @@
 
   name = MNIST
   description = Guild MNIST example
+  sources = *.py
 
 [flags]
 
