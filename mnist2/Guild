@@ -53,25 +53,25 @@
 
 [field "validation-accuracy"]
 
-  template = accuracy-field
+  @attrs template "accuracy-field"
   source = series/tf/validation/accuracy
   label = Validation Accuracy
 
 [field "train-accuracy"]
 
-  template = accuracy-field
+  @attrs template "accuracy-field"
   source = series/tf/train/accuracy
   label = Training Accuracy
   color = teal-400
 
 [field "steps"]
 
-  template = steps-field
+  @attrs template "steps-field"
   source = series/tf/train/loss
 
 [field "time"]
 
-  template = time-field
+  @attrs template "time-field"
   source = series/tf/train/loss
   template = time-field
 
@@ -81,37 +81,29 @@
 
 [series "loss"]
 
-  template = loss-series
+  @attrs template "loss-series"
   source = series/tf/train/loss
 
 [series "accuracy"]
 
-  template = accuracy-series
+  @attrs template "accuracy-series"
   source = series/tf/.+/accuracy
 
 [series "op-cpu-percent"]
 
-  template = percent-util-series
-  source = series/op/cpu/util
-  title = Process CPU %
+  @attrs template "op-cpu-percent-series"
 
 [series "op-memory"]
 
-  template = memory-series
-  source = series/op/mem/rss
-  title = Process Memory
+  @attrs template "op-memory-series"
 
 [series "gpu-percent"]
 
-  template = percent-util-series
-  source = series/sys/gpu.*/gpu/util
-  title = GPU %
+  @attrs template "gpu-percent-series"
 
 [series "gpu-memory"]
 
-  template = memory-series
-  source = series/sys/gpu.*/mem/used
-  title = GPU Memory
+  @attrs template "gpu-memory-series"
 
 ###################################################################
 # Compare fields
@@ -119,11 +111,11 @@
 
 [compare-field "validation-accuracy"]
 
-  fieldref = validation-accuracy
+  @attrs field "validation-accuracy"
 
 [compare-field "train-accuracy"]
 
-  fieldref = train-accuracy
+  @attrs field "train-accuracy"
 
 [compare-field "batch-size"]
 
@@ -133,8 +125,8 @@
 
 [compare-field "steps"]
 
-  fieldref = steps
+  @attrs field "steps"
 
 [compare-field "time"]
 
-  fieldref = time
+  @attrs field "time"
