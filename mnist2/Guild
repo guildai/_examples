@@ -1,7 +1,7 @@
 #-*-conf-*-
 
 ###################################################################
-# Project / flags
+# Project
 ###################################################################
 
 [project]
@@ -9,13 +9,6 @@
   name = MNIST
   description = Guild MNIST example
   sources = *.py
-
-[flags]
-
-  datadir = ./data
-  rundir = $RUNDIR
-  batch_size = 100
-  epochs = 10
 
 ###################################################################
 # Models
@@ -34,6 +27,17 @@
   prepare = expert --prepare
   train_requires = ./data
   evaluate = expert --test
+
+###################################################################
+# Flags
+###################################################################
+
+[flags]
+
+  datadir = ./data
+  rundir = $RUNDIR
+  batch_size = 100
+  epochs = 10
 
 ###################################################################
 # Resources
@@ -88,22 +92,6 @@
 
   @attrs template "accuracy-series"
   source = series/tf/.+/accuracy
-
-[series "op-cpu-percent"]
-
-  @attrs template "op-cpu-percent-series"
-
-[series "op-memory"]
-
-  @attrs template "op-memory-series"
-
-[series "gpu-percent"]
-
-  @attrs template "gpu-percent-series"
-
-[series "gpu-memory"]
-
-  @attrs template "gpu-memory-series"
 
 ###################################################################
 # Compare fields
