@@ -55,25 +55,25 @@
 # Fields
 ###################################################################
 
-[field "validation-accuracy"]
+[train-field "validation-accuracy"]
 
   @attrs template "accuracy-field"
   source = series/tf/validation/accuracy
   label = Validation Accuracy
 
-[field "train-accuracy"]
+[train-field "train-accuracy"]
 
   @attrs template "accuracy-field"
   source = series/tf/train/accuracy
   label = Training Accuracy
   color = teal-400
 
-[field "steps"]
+[train-field "steps"]
 
   @attrs template "steps-field"
   source = series/tf/train/loss
 
-[field "time"]
+[train-field "time"]
 
   @attrs template "time-field"
   source = series/tf/train/loss
@@ -99,11 +99,11 @@
 
 [compare-field "validation-accuracy"]
 
-  @attrs field "validation-accuracy"
+  @attrs train-field "validation-accuracy"
 
 [compare-field "train-accuracy"]
 
-  @attrs field "train-accuracy"
+  @attrs train-field "train-accuracy"
 
 [compare-field "batch-size"]
 
@@ -113,8 +113,8 @@
 
 [compare-field "steps"]
 
-  @attrs field "steps"
+  @attrs train-field "steps"
 
 [compare-field "time"]
 
-  @attrs field "time"
+  @attrs train-field "time"
