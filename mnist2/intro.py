@@ -96,7 +96,7 @@ def init_session():
 
 def train():
     steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
-    for step in range(steps + 1):
+    for step in range(steps):
         images, labels = mnist.train.next_batch(FLAGS.batch_size)
         batch = {x: images, y_: labels}
         sess.run(train_op, batch)
@@ -115,7 +115,7 @@ def maybe_log_accuracy(step, last_training_batch):
 def evaluate(step, data, writer, name):
     accuracy_val, summary = sess.run([accuracy, summaries], data)
     writer.add_summary(summary, step)
-    print "Step %i: %s=%f" % (step, name, accuracy_val)
+    print("Step %i: %s=%f" % (step, name, accuracy_val))
 
 def maybe_save_model(step):
     epoch_step = mnist.train.num_examples / FLAGS.batch_size
@@ -123,7 +123,7 @@ def maybe_save_model(step):
         save_model()
 
 def save_model():
-    print "Saving trained model"
+    print("Saving trained model")
     tf.gfile.MakeDirs(FLAGS.rundir + "/model")
     tf.train.Saver().save(sess, FLAGS.rundir + "/model/export")
 
@@ -135,14 +135,18 @@ def init_exported_collections():
     global x, y_, accuracy
     saver = tf.train.import_meta_graph(FLAGS.rundir + "/model/export.meta")
     saver.restore(sess, FLAGS.rundir + "/model/export")
-    x = sess.graph.get_tensor_by_name(tf.get_collection("x")[0])
-    y_ = sess.graph.get_tensor_by_name(tf.get_collection("y_")[0])
-    accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
+    x = tensor_by_collection_name("x")
+    y_ = tensor_by_collection_name("y_")
+    accuracy = tensor_by_collection_name("accuracy")
+
+def tensor_by_collection_name(name):
+    tensor_name = tf.get_collection(name)[0].decode("UTF-8")
+    return sess.graph.get_tensor_by_name(tensor_name)
 
 def test():
     data = {x: mnist.test.images, y_: mnist.test.labels}
     test_accuracy = sess.run(accuracy, data)
-    print "Test accuracy=%f" % test_accuracy
+    print("Test accuracy=%f" % test_accuracy)
 
 if __name__ == "__main__":
     init_flags()
