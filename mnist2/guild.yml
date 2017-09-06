@@ -45,9 +45,11 @@ train-fields:
 
   - id: train-steps
     extends: steps-field
+    source: series/tf/train/loss
 
   - id: train-time
     extends: time-field
+    source: series/tf/train/loss
 
 train-series:
 
@@ -64,8 +66,9 @@ compare-fields:
   - extends: train-accuracy
 
   - label: Batch Size
-    source: flags/batch_size
+    source: flags
+    attribute: batch_size
 
-  - extends: steps-field
+  - extends: train-steps
 
-  - extends: time-field
+  - extends: train-time
