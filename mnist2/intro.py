@@ -74,13 +74,13 @@ def init_op_summaries():
     tf.summary.scalar("accuracy", accuracy)
 
 def init_summary_writers():
-    global summaries, train_writer, validation_writer
+    global summaries, train_writer, validate_writer
     summaries = tf.summary.merge_all()
     train_writer = tf.summary.FileWriter(
         FLAGS.rundir + "/train",
         tf.get_default_graph())
-    validation_writer = tf.summary.FileWriter(
-        FLAGS.rundir + "/validation")
+    validate_writer = tf.summary.FileWriter(
+        FLAGS.rundir + "/validate")
 
 def init_collections():
     tf.add_to_collection("inputs", json.dumps({"image": x.name}))
@@ -106,11 +106,11 @@ def train():
 def maybe_log_accuracy(step, last_training_batch):
     if step % 20 == 0:
         evaluate(step, last_training_batch, train_writer, "training")
-        validation_data = {
+        validate_data = {
             x: mnist.validation.images,
             y_: mnist.validation.labels
         }
-        evaluate(step, validation_data, validation_writer, "validation")
+        evaluate(step, validate_data, validate_writer, "validate")
 
 def evaluate(step, data, writer, name):
     accuracy_val, summary = sess.run([accuracy, summaries], data)

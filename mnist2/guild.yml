@@ -40,6 +40,7 @@ train-fields:
 
   - id: train-accuracy
     extends: accuracy-field
+    color: cyan-700
     label: Training Accuracy
     source: series/tf/train/accuracy
 

@@ -1,0 +1,47 @@
+- name: mnist-intro
+  description: MNIST model from TensorFlow intro tutorial
+  tags: mnist softmax regression images
+
+  operations:
+    prepare:
+      description: Prepare the MNIST data for training
+      cmd: intro --prepare
+    train:
+      description: Train the MNIST model
+      cmd: intro
+    evaluate:
+      description: Evaluate a trained model using test data
+      cmd: intro --test
+    test:
+      description: A test operations
+      cmd: test
+
+  flags:
+    batch-size:
+      help: "Number of images to include in a training batch."
+      value: 100
+    epochs:
+      help: "Number of epochs to train."
+      value: 10
+
+- name: mnist-expert
+  description: MNIST model from TensorFlow expert tutorial
+
+  operations:
+    prepare:
+      cmd: expert --prepare
+      description: Prepare the MNIST data for training
+    train:
+      description: Train the MNIST model
+      cmd: expert
+    evaluate:
+      description: Evaluate a trained model using test data
+      cmd: expert --test
+
+  flags:
+    batch-size:
+      help: "Number of images to include in a training batch."
+      value: 100
+    epochs:
+      help: "Number of epochs to train."
+      value: 10
