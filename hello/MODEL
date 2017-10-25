@@ -1,0 +1,34 @@
+name: hello
+description: >
+  A "hello world" sample model
+
+  This is a sample model that provides various operations for printing
+  hello world messages.
+
+  The message provided, either by default, by a flag, or a file (see
+  each operation for the applicable interface) is printed to standard
+  output and written to a file named `output` in the run directory.
+
+operations:
+  from-file:
+    description:
+      Print a message from a file
+
+      Use the file flag to specify the file to print. Defaults to MSG.
+
+    cmd: say
+    requires: MSG
+    flags:
+      file:
+        description: File containing the message to print
+        value: MSG
+  from-flag:
+    description: Print a message
+    cmd: say
+    flags:
+      message:
+        description: Message to print
+        value: Hello Guild, from a flag!
+  default:
+    description: Print a default message
+    cmd: say
