@@ -11,24 +11,40 @@ description: >
 
 operations:
   from-file:
-    description:
+    description: >
       Print a message from a file
 
-      Use the file flag to specify the file to print. Defaults to MSG.
+      Use the 'file' flag to specify the file to print.
 
     cmd: say
-    requires: MSG
+    requires: msg-file
     flags:
       file:
         description: File containing the message to print
         value: MSG
   from-flag:
-    description: Print a message
+    description: >
+      Print a message
+
+      Use the 'message' flag to specify the message to print.
+
     cmd: say
     flags:
       message:
         description: Message to print
         value: Hello Guild, from a flag!
   default:
-    description: Print a default message
+    description: >
+      Print a default message
+
+      This operation doesn't support a user-defined message. Use the
+      from-flag operation with the 'message' flag to print an
+      alternative message.
+
     cmd: say
+
+resources:
+  msg-file:
+    sources:
+      - file: MSG
+        sha256: 0bc96b4f4757a80c0a3f9b9bc14de789e5eb1d75659904de68241cfc7030e7de
