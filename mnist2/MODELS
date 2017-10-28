@@ -4,11 +4,11 @@
     train:
       description: Train the MNIST model
       cmd: intro --datadir data
-      requires: common:data
+      requires: _mnist:data
     evaluate:
       description: Evaluate a trained model using test data
       cmd: intro --test
-  flags: common
+  flags: _mnist
 
 - name: mnist-expert
   description: MNIST model from TensorFlow expert tutorial
@@ -16,16 +16,16 @@
     train:
       description: Train the MNIST model
       cmd: expert --datadir data
-      requires: common:data
+      requires: _mnist:data
     evaluate:
       description: Evaluate a trained model using test data
       cmd: expert --test
   flags:
-    $include: common
+    $include: _mnist
     epochs: 5
 
-- name: common
-  visibility: private
+- name: _mnist
+  private: yes
   description: Shared definitions
   flags:
     batch-size:
