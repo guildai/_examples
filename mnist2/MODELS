@@ -1,5 +1,6 @@
 - name: mnist-intro
   description: MNIST model from TensorFlow intro tutorial
+  flags: use _mnist
   operations:
     train:
       description: Train the MNIST model
@@ -8,10 +9,12 @@
     evaluate:
       description: Evaluate a trained model using test data
       cmd: intro --test
-  flags: _mnist
 
 - name: mnist-expert
   description: MNIST model from TensorFlow expert tutorial
+  flags:
+    $include: _mnist
+    epochs: 5
   operations:
     train:
       description: Train the MNIST model
@@ -20,9 +23,6 @@
     evaluate:
       description: Evaluate a trained model using test data
       cmd: expert --test
-  flags:
-    $include: _mnist
-    epochs: 5
 
 - name: _mnist
   private: yes
