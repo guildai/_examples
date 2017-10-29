@@ -5,7 +5,7 @@ p = argparse.ArgumentParser()
 p.add_argument("--rundir")
 p.add_argument("--message")
 p.add_argument("--file")
-p.add_argument("--file-2", action="store_true")
+p.add_argument("--file-output", action="store_true")
 
 args = p.parse_args()
 
@@ -13,9 +13,9 @@ def say(msg):
     print(msg)
     open("output", "w").write(msg)
 
-if args.file_2:
+if args.file_output:
     say("Latest from-file output:")
-    say(open("latest-from-file/output", "r").read())
+    say(open("from-file/output", "r").read())
 elif args.file:
     try:
         out = open(args.file, "r").read()
