@@ -102,6 +102,7 @@ def train():
         sess.run(train_op, batch)
         maybe_log_accuracy(step, batch)
         maybe_save_model(step)
+    save_model()
 
 def maybe_log_accuracy(step, last_training_batch):
     if step % 20 == 0:

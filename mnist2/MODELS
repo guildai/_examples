@@ -1,39 +1,52 @@
 - name: mnist-intro
   description: MNIST model from TensorFlow intro tutorial
-  flags: use _mnist
   operations:
     train:
       description: Train the MNIST model
       cmd: intro --datadir data
+      flags:
+        batch-size:
+          description: Number of images to include in a training batch
+          value: 100
+        epochs:
+          description: Number of epochs to train
+          value: 10
       requires: _mnist:data
     evaluate:
       description: Evaluate a trained model using test data
       cmd: intro --test
+      requires: model
+  resources:
+    model:
+      sources:
+        - operation: train/model
 
 - name: mnist-expert
   description: MNIST model from TensorFlow expert tutorial
-  flags:
-    $include: _mnist
-    epochs: 5
   operations:
     train:
       description: Train the MNIST model
       cmd: expert --datadir data
       requires: _mnist:data
+      flags:
+        batch-size:
+          description: Number of images to include in a training batch
+          value: 100
+        epochs:
+          description: Number of epochs to train
+          value: 5
     evaluate:
       description: Evaluate a trained model using test data
       cmd: expert --test
+      requires: model
+  resources:
+    model:
+      sources:
+        - operation: train/model
 
 - name: _mnist
   private: yes
   description: Shared definitions
-  flags:
-    batch-size:
-      description: Number of images to include in a training batch
-      value: 100
-    epochs:
-      description: Number of epochs to train
-      value: 10
   resources:
     data:
       description: Yann Lecun's MNIST dataset in compressed IDX format

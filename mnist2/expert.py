@@ -123,12 +123,13 @@ def init_session():
 
 def train():
     steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
-    for step in range(steps + 1):
+    for step in range(steps):
         images, labels = mnist.train.next_batch(FLAGS.batch_size)
         batch = {x: images, y_: labels}
         sess.run(train_op, batch)
         maybe_log_accuracy(step, batch)
         maybe_save_model(step)
+    save_model()
 
 def maybe_log_accuracy(step, last_training_batch):
     if step % 20 == 0:
