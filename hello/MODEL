@@ -43,7 +43,7 @@ operations:
     flags:
       file:
         description: File containing the message to print
-        value: MSG
+        value: msg.txt
 
   from-file-output:
     description: >
@@ -57,7 +57,7 @@ operations:
 resources:
   msg-file:
     sources:
-      - file: MSG
+      - file: msg.txt
         sha256: 0bc96b4f4757a80c0a3f9b9bc14de789e5eb1d75659904de68241cfc7030e7de
 
   file-output:
