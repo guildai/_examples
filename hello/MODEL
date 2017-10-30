@@ -63,4 +63,4 @@ resources:
   file-output:
     path: from-file
     sources:
-      - operation: from-file/output
+      - operation: from-file//output
