@@ -14,8 +14,8 @@
       requires: _mnist:data
     evaluate:
       description: Evaluate a trained model using test data
-      cmd: intro --test
-      requires: model
+      cmd: intro --test --datadir data
+      requires: [model, _mnist:data]
   resources:
     model:
       description: Exported intro model
@@ -38,8 +38,8 @@
           value: 5
     evaluate:
       description: Evaluate a trained model using test data
-      cmd: expert --test
-      requires: model
+      cmd: expert --test --datadir data
+      requires: [model, _mnist:data]
   resources:
     model:
       description: Exported expert model
