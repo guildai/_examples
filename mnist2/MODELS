@@ -3,7 +3,7 @@
   operations:
     train:
       description: Train the MNIST model
-      cmd: intro --datadir data
+      cmd: intro --datadir data --rundir .
       flags:
         batch-size:
           description: Number of images to include in a training batch
@@ -27,7 +27,7 @@
   operations:
     train:
       description: Train the MNIST model
-      cmd: expert --datadir data
+      cmd: expert --datadir data --rundir .
       requires: _mnist:data
       flags:
         batch-size:
@@ -38,7 +38,7 @@
           value: 5
     evaluate:
       description: Evaluate a trained model using test data
-      cmd: expert --test --datadir data
+      cmd: expert --test --datadir data --rundir .
       requires: [model, '_mnist:data']
   resources:
     model:
