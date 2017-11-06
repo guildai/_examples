@@ -14,7 +14,7 @@
       requires: _mnist:data
     evaluate:
       description: Evaluate a trained model using test data
-      cmd: intro --test --datadir data
+      cmd: intro --test --datadir data --rundir .
       requires: [model, '_mnist:data']
   resources:
     model:
