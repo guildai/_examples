@@ -20,7 +20,8 @@
     model:
       description: Exported intro model
       sources:
-      - operation: train//model
+      - operation: train
+        select: model
 
 - name: mnist-expert
   description: MNIST model from TensorFlow expert tutorial
@@ -44,7 +45,8 @@
     model:
       description: Exported expert model
       sources:
-      - operation: train//model
+      - operation: train
+        select: model
 
 - name: _mnist
   private: yes
