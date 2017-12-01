@@ -11,11 +11,13 @@
         epochs:
           description: Number of epochs to train
           value: 10
-      requires: _mnist:data
+      requires: mnist:data
     evaluate:
       description: Evaluate a trained model using test data
       cmd: intro --test --datadir data --rundir .
-      requires: [model, '_mnist:data']
+      requires:
+        - model
+        - mnist:data
   resources:
     model:
       description: Exported intro model
@@ -29,7 +31,7 @@
     train:
       description: Train the MNIST model
       cmd: expert --datadir data --rundir .
-      requires: _mnist:data
+      requires: mnist:data
       flags:
         batch-size:
           description: Number of images to include in a training batch
@@ -40,7 +42,9 @@
     evaluate:
       description: Evaluate a trained model using test data
       cmd: expert --test --datadir data --rundir .
-      requires: [model, '_mnist:data']
+      requires:
+        - model
+        - mnist:data
   resources:
     model:
       description: Exported expert model
@@ -48,7 +52,7 @@
       - operation: train
         select: model
 
-- name: _mnist
+- name: mnist
   private: yes
   description: Shared definitions
   resources:
