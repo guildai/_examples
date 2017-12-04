@@ -1,3 +1,45 @@
+- name: mnist-base
+  operations:
+    train:
+      description: Train the MNIST model
+      cmd: {{cmd_mod}} --datadir data --rundir .
+      flags:
+        batch-size:
+          description: Number of images to include in a training batch
+          default: 100
+        epochs:
+          description: Number of epochs to train
+          default: 10
+      requires: mnist:data
+    evaluate:
+      description: Evaluate a trained model using test data
+      cmd: {{cmd_mod}} --test --datadir data --rundir .
+      requires:
+        - model
+        - mnist:data
+  resources:
+    model:
+      description: Exported intro model
+      sources:
+      - operation: train
+        select: model
+
+- name: mnist-intro-todo
+  description: MNIST model from TensorFlow intro tutorial
+  extends: mnist-base
+  params:
+    cmd_mod: intro
+
+- name: mnist-expert-todo
+  description: MNIST model from TensorFlow expert tutorial
+  extends: mnist-base
+  params:
+    cmd_mod: expert
+  operations:
+    train:
+      flags:
+        epochs: 5
+
 - name: mnist-intro
   description: MNIST model from TensorFlow intro tutorial
   operations:
@@ -7,10 +49,10 @@
       flags:
         batch-size:
           description: Number of images to include in a training batch
-          value: 100
+          default: 100
         epochs:
           description: Number of epochs to train
-          value: 10
+          default: 10
       requires: mnist:data
     evaluate:
       description: Evaluate a trained model using test data
@@ -35,10 +77,10 @@
       flags:
         batch-size:
           description: Number of images to include in a training batch
-          value: 100
+          default: 100
         epochs:
           description: Number of epochs to train
-          value: 5
+          default: 5
     evaluate:
       description: Evaluate a trained model using test data
       cmd: expert --test --datadir data --rundir .
@@ -54,7 +96,6 @@
 
 - name: mnist
   private: yes
-  description: Shared definitions
   resources:
     data:
       description: Yann Lecun's MNIST dataset in compressed IDX format
