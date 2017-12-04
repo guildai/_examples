@@ -30,7 +30,7 @@ operations:
     flags:
       message:
         description: Message to print
-        value: Hello Guild, from a flag!
+        default: Hello Guild, from a flag!
 
   from-file:
     description: >
@@ -43,7 +43,7 @@ operations:
     flags:
       file:
         description: File containing the message to print
-        value: msg.txt
+        default: msg.txt
 
   from-file-output:
     description: >
