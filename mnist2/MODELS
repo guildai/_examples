@@ -18,12 +18,13 @@
       requires: [model, data]
   resources:
     model:
-      description: Exported intro model
+      description: Exported model
       sources:
       - operation: train
         select: model
     data:
       description: "Yann Lecun's MNIST dataset in compressed IDX format"
+      private: yes
       path: data
       sources:
       - url: http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
