@@ -4,7 +4,7 @@ This repository contains a limited number of Guild AI examples. It's
 used primary for automated testing.
 
 For a more comprehensive list of sample projects, see
-[https://github.com/guildai/examples](https://github.com/guildai/examples).
+[https://github.com/guildai/packages](https://github.com/guildai/packages).
 
 Additional links:
 
