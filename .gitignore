@@ -1,4 +1,4 @@
 logs
 runs
 *.pyc
-erl_crash.dump
+/README.html
