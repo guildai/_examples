@@ -3,7 +3,7 @@
   operations:
     train:
       description: Train the model.
-      cmd: train_checkpoint_2 --model-dir .
+      cmd: train --model-dir .
       flags:
         train-steps:
           description: Number of steps to train.
@@ -11,11 +11,3 @@
         batch-size:
           description: Training batch size.
           default: 64
-        model-version:
-          description: Model version to use.
-          default: 1
-          choices: [1, 2]
-  extra:
-    compare:
-      flags:
-        - model-version
