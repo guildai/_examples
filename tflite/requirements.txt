@@ -1,0 +1,2 @@
+gpkg.slim
+gpkg.slim.datasets

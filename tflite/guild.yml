@@ -134,7 +134,7 @@
           --checkpoint_path model
       flags:
         $include:
-          - model-support
+          - network-support
           - dataset-support
         max-batches:
           description: Maximum number of batches to evaluate (default is all)
@@ -151,7 +151,7 @@
           --output_file exported.pb
       flags:
         $include:
-          - model-support
+          - network-support
           - dataset-support
       requires:
         - slim-models-lib
@@ -178,7 +178,7 @@
         - slim-models-lib
         - checkpoint
         - exported-model
-    toco:
+    tflite:
       description: Generate tflite file from a frozen graph using toco
       cmd: >
 
@@ -221,10 +221,11 @@
         - url: https://s3.amazonaws.com/guild-pub/kaggle-dogs-vs-cats/train.zip
           sha256: 36fbbfb947aeffeaf6f8ddf5178cd43d1b74aae150dff942eadb07df7929a6d7
     prepared-dataset:
-      description: Prepared dataset (use prepare-dataset operation)
+      description: Prepared data (use prepare-data operation)
       sources:
-        - operation: catscan:prepare-data
+        - operation: prepare-data
           select: data
+          help: Try 'guild run prepare-data'
     checkpoint:
       description: Model checkpoint (use train or finetune operation)
       path: model
@@ -233,16 +234,19 @@
           select:
             - checkpoint
             - model\.ckpt.*
+          help: Try 'guild run train' or 'guild run finetune'
     exported-model:
       description: Exported model (use export operation)
       sources:
         - operation: export
           select: exported.pb
+          help: Try 'guild run export'
     frozen-model:
       description: Frozen model (use freeze operation)
       sources:
         - operation: freeze
           select: frozen.pb
+          help: Try 'guild run freeze'
     mobilenet_v1-checkpoint:
       description: MobileNet v1 checkpoint - 89.9% top-5 acc
       sources:
