@@ -1,0 +1,251 @@
+- config: network-support
+  flags:
+    network:
+      description: Network architecture
+      default: mobilenet_v1
+      arg-name: model_name
+      choices:
+        - mobilenet_v1
+
+- config: train-support
+  flags:
+    $include: network-support
+    max-steps:
+      description: Maximum number of training steps
+      default: 1000
+      arg-name: max_number_of_steps
+    batch-size:
+      description: Number of samples in each batch
+      default: 32
+      arg-name: batch_size
+    learning-rate:
+      description: Initial learning rate
+      default: 0.01
+      arg-name: learning_rate
+    learning-rate-decay-type:
+      default: exponential
+      description: How the learning rate is decayed
+      default: exponential
+      choices:
+        - fixed
+        - exponential
+        - polynomial
+      arg-name: learning_rate_decay_type
+    weight-decay:
+      description: Weight decay on the model weights
+      default: 0.00004
+      arg-name: weight_decay
+    optimizer:
+      description: Training optimizer (adadelta, adagrad, adam, ftrl, momentum, sgd, rmsprop)
+      default: rmsprop
+      choices:
+        - adadelta
+        - adagrad
+        - adam
+        - ftrl
+        - momentum
+        - sgd
+        - rmsprop
+    log-every-n-steps:
+      description: Steps between status updates
+      default: 100
+      arg-name: log_every_n_steps
+    save-summaries-secs:
+      description: Seconds between summary saves
+      default: 120
+      arg-name: save_summaries_secs
+    save-model-secs:
+      description: Seconds between model saves
+      default: 600
+      arg-name: save_interval_secs
+
+- config: dataset-support
+  flags:
+    dataset:
+      description: Dataset used for operation
+      default: custom
+      arg-name: dataset_name
+      choices:
+        - custom
+        - flowers
+
+- model: tflite-example
+  description: Sample model for creating a TF lite file
+  operations:
+    prepare-data:
+      description: Prepare dataset for training or fine tuning
+      cmd: prepare_data --output-dir data
+      flags:
+        dataset:
+          description: Dataset to prepare
+          default: dogs-vs-cats
+          choices:
+            - value: dogs-vs-cats
+              description: Dataset consisting of dogs and cats
+              args:
+                images-dir: train
+      requires:
+        - slim-models-lib
+        - ${dataset}
+    train:
+      description: Train a model
+      cmd: >
+        gpkg/slim/slim_op train_image_classifier
+          --train_dir .
+          --dataset_split_name train
+          --dataset_dir data
+          --dataset_name custom
+      flags:
+        $include: train-support
+      requires:
+        - slim-models-lib
+        - prepared-dataset
+    finetune:
+      description: Fine-tune a pre-trained model
+      cmd: >
+        gpkg/slim/slim_op train_image_classifier
+          --train_dir .
+          --dataset_split_name train
+          --dataset_dir data
+      flags:
+        $include:
+          - train-support
+          - dataset-support
+        checkpoint:
+          description: Checkpoint containing pre-trained weights to fine-tune
+          default: mobilenet_v1
+          choices:
+            - value: mobilenet_v1
+              args:
+                checkpoint_path: mobilenet_v1_1.0_224.ckpt
+                checkpoint_exclude_scopes: MobilenetV1/Logits
+                trainable_scope: MobilenetV1/Logits
+      requires:
+        - slim-models-lib
+        - prepared-dataset
+        - ${checkpoint}-checkpoint
+    evaluate:
+      description: Evaluate a trained model
+      cmd: >
+        gpkg/slim/slim_op eval_image_classifier
+          --eval_dir .
+          --dataset_split_name validation
+          --dataset_dir data
+          --checkpoint_path model
+      flags:
+        $include:
+          - model-support
+          - dataset-support
+        max-batches:
+          description: Maximum number of batches to evaluate (default is all)
+          arg-name: max_num_batches
+      requires:
+        - slim-models-lib
+        - checkpoint
+        - prepared-dataset
+    export:
+      description: Export trained graph def
+      cmd: >
+        gpkg/slim/slim_op export_inference_graph
+          --dataset_dir data
+          --output_file exported.pb
+      flags:
+        $include:
+          - model-support
+          - dataset-support
+      requires:
+        - slim-models-lib
+        - checkpoint
+        - prepared-dataset
+    freeze:
+      description: Freeze graph with checkpoint variables
+      cmd: >
+        gpkg/slim/slim_op tensorflow/python/tools/freeze_graph
+          --input_graph exported.pb
+          --input_binary true
+          --input_checkpoint model/model.ckpt
+          --output_graph frozen.pb
+      flags:
+        network:
+          description: Network architecture used to freeze graph
+          default: mobilenet_v1
+          arg-skip: yes
+          choices:
+            - value: mobilenet_v1
+              args:
+                output_node_names: MobilenetV1/Predictions/Reshape_1
+      requires:
+        - slim-models-lib
+        - checkpoint
+        - exported-model
+    toco:
+      description: Generate tflite file from a frozen graph using toco
+      cmd: >
+
+    classify:
+      description: Classify an image using a frozen graph
+      cmd: >
+        label_image
+          --input_layer input
+          --graph frozen.pb
+          --labels data/labels.txt
+          --input_mean 0
+          --input_std 1
+          --input_width 224
+          --input_height 224
+      flags:
+        image:
+          description: Image to classify
+          required: yes
+        network:
+          description: Network architecture of frozen graph (used for named output layer)
+          default: mobilenet_v1
+          arg-skip: yes
+          choices:
+            - value: mobilenet_v1
+              args:
+                output_layer: MobilenetV1/Predictions/Reshape_1
+      requires:
+        - frozen-model
+        - prepared-dataset
+  resources:
+    slim-models-lib:
+      description: TF-Slim models lib
+      sources:
+        - url: https://github.com/tensorflow/models/archive/c7c3970c0983290bd67e98aa0a93043fe09e1390.zip
+          sha256: 2b70567e2cf6caef26eb596986732983d6509e9feec4054f4a763fc7cb313a1d
+          select: models-c7c3970c0983290bd67e98aa0a93043fe09e1390/research/slim
+    dogs-vs-cats:
+      description: Dogs vs cats dataset from Kaggle competition
+      sources:
+        - url: https://s3.amazonaws.com/guild-pub/kaggle-dogs-vs-cats/train.zip
+          sha256: 36fbbfb947aeffeaf6f8ddf5178cd43d1b74aae150dff942eadb07df7929a6d7
+    prepared-dataset:
+      description: Prepared dataset (use prepare-dataset operation)
+      sources:
+        - operation: catscan:prepare-data
+          select: data
+    checkpoint:
+      description: Model checkpoint (use train or finetune operation)
+      path: model
+      sources:
+        - operation: train,finetune
+          select:
+            - checkpoint
+            - model\.ckpt.*
+    exported-model:
+      description: Exported model (use export operation)
+      sources:
+        - operation: export
+          select: exported.pb
+    frozen-model:
+      description: Frozen model (use freeze operation)
+      sources:
+        - operation: freeze
+          select: frozen.pb
+    mobilenet_v1-checkpoint:
+      description: MobileNet v1 checkpoint - 89.9% top-5 acc
+      sources:
+        - url: http://download.tensorflow.org/models/mobilenet_v1_2018_02_22/mobilenet_v1_1.0_224.tgz
+          sha256: 1ccb74dbd9c5f7aea879120614e91617db9534bdfaa53dfea54b7c14162e126b
+          select: .*\.ckpt.*
