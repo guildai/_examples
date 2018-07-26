@@ -18,7 +18,7 @@ operations:
       from-flag operation with the 'message' flag to print an
       alternative message.
 
-    cmd: say
+    main: say
 
   from-flag:
     description: >
@@ -26,7 +26,7 @@ operations:
 
       Use the 'message' flag to specify the message to print.
 
-    cmd: say
+    main: say
     flags:
       message:
         description: Message to print
@@ -38,7 +38,7 @@ operations:
 
       Use the 'file' flag to specify the file to print.
 
-    cmd: say
+    main: say
     requires: msg-file
     flags:
       file:
@@ -51,7 +51,7 @@ operations:
 
       This operation requires a completed file-output run.
 
-    cmd: say --file-output
+    main: say --file-output
     requires: file-output
 
 resources:

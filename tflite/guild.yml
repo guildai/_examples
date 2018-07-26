@@ -74,7 +74,7 @@
   operations:
     prepare-data:
       description: Prepare dataset for training or fine tuning
-      cmd: prepare_data --output-dir data
+      main: prepare_data --output-dir data
       flags:
         dataset:
           description: Dataset to prepare
@@ -89,7 +89,7 @@
         - ${dataset}
     train:
       description: Train a model
-      cmd: >
+      main: >
         gpkg/slim/slim_op train_image_classifier
           --train_dir .
           --dataset_split_name train
@@ -102,7 +102,7 @@
         - prepared-dataset
     finetune:
       description: Fine-tune a pre-trained model
-      cmd: >
+      main: >
         gpkg/slim/slim_op train_image_classifier
           --train_dir .
           --dataset_split_name train
@@ -126,7 +126,7 @@
         - ${checkpoint}-checkpoint
     evaluate:
       description: Evaluate a trained model
-      cmd: >
+      main: >
         gpkg/slim/slim_op eval_image_classifier
           --eval_dir .
           --dataset_split_name validation
@@ -145,7 +145,7 @@
         - prepared-dataset
     export:
       description: Export trained graph def
-      cmd: >
+      main: >
         gpkg/slim/slim_op export_inference_graph
           --dataset_dir data
           --output_file exported.pb
@@ -159,7 +159,7 @@
         - prepared-dataset
     freeze:
       description: Freeze graph with checkpoint variables
-      cmd: >
+      main: >
         gpkg/slim/slim_op tensorflow/python/tools/freeze_graph
           --input_graph exported.pb
           --input_binary true
@@ -180,11 +180,11 @@
         - exported-model
     tflite:
       description: Generate tflite file from a frozen graph using toco
-      cmd: >
+      main: >
 
     classify:
       description: Classify an image using a frozen graph
-      cmd: >
+      main: >
         label_image
           --input_layer input
           --graph frozen.pb
