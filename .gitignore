@@ -3,3 +3,5 @@ runs
 *.pyc
 /README.html
 env
+build
+*.egg-info

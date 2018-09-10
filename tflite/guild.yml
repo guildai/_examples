@@ -1,30 +1,34 @@
-- config: network-support
+- package: tflite-example
+  version: 0.0.0
+  author-email: packages@guilda.ai
+
+- config: network-flags
   flags:
     network:
-      description: Network architecture
+      description: Network architecture.
       default: mobilenet_v1
       arg-name: model_name
       choices:
         - mobilenet_v1
 
-- config: train-support
+- config: train-flags
   flags:
-    $include: network-support
+    $include: network-flags
     max-steps:
-      description: Maximum number of training steps
+      description: Maximum number of training steps.
       default: 1000
       arg-name: max_number_of_steps
     batch-size:
-      description: Number of samples in each batch
+      description: Number of samples in each batch.
       default: 32
       arg-name: batch_size
     learning-rate:
-      description: Initial learning rate
+      description: Initial learning rate.
       default: 0.01
       arg-name: learning_rate
     learning-rate-decay-type:
       default: exponential
-      description: How the learning rate is decayed
+      description: How the learning rate is decayed.
       default: exponential
       choices:
         - fixed
@@ -32,11 +36,11 @@
         - polynomial
       arg-name: learning_rate_decay_type
     weight-decay:
-      description: Weight decay on the model weights
+      description: Weight decay on the model weights.
       default: 0.00004
       arg-name: weight_decay
     optimizer:
-      description: Training optimizer (adadelta, adagrad, adam, ftrl, momentum, sgd, rmsprop)
+      description: Training optimizer (adadelta, adagrad, adam, ftrl, momentum, sgd, rmsprop).
       default: rmsprop
       choices:
         - adadelta
@@ -47,22 +51,22 @@
         - sgd
         - rmsprop
     log-every-n-steps:
-      description: Steps between status updates
+      description: Steps between status updates.
       default: 100
       arg-name: log_every_n_steps
     save-summaries-secs:
-      description: Seconds between summary saves
+      description: Seconds between summary saves.
       default: 120
       arg-name: save_summaries_secs
     save-model-secs:
-      description: Seconds between model saves
+      description: Seconds between model saves.
       default: 600
       arg-name: save_interval_secs
 
-- config: dataset-support
+- config: dataset-flags
   flags:
     dataset:
-      description: Dataset used for operation
+      description: Dataset used for operation.
       default: custom
       arg-name: dataset_name
       choices:
@@ -70,25 +74,30 @@
         - flowers
 
 - model: tflite-example
-  description: Sample model for creating a TF lite file
+  description: >
+    Sample model for creating a TF lite file.
+
+    Typical order of operations:
+     - tflite-example:prepare-data
+
   operations:
     prepare-data:
-      description: Prepare dataset for training or fine tuning
+      description: Prepare dataset for training or fine tuning.
       main: prepare_data --output-dir data
       flags:
         dataset:
-          description: Dataset to prepare
+          description: Dataset to prepare.
           default: dogs-vs-cats
           choices:
             - value: dogs-vs-cats
-              description: Dataset consisting of dogs and cats
+              description: Dataset consisting of dogs and cats.
               args:
                 images-dir: train
       requires:
         - slim-models-lib
         - ${dataset}
     train:
-      description: Train a model
+      description: Train a model.
       main: >
         gpkg/slim/slim_op train_image_classifier
           --train_dir .
@@ -96,12 +105,12 @@
           --dataset_dir data
           --dataset_name custom
       flags:
-        $include: train-support
+        $include: train-flags
       requires:
         - slim-models-lib
         - prepared-dataset
-    finetune:
-      description: Fine-tune a pre-trained model
+    transfer-learn:
+      description: Train a model using transfer learning.
       main: >
         gpkg/slim/slim_op train_image_classifier
           --train_dir .
@@ -109,10 +118,10 @@
           --dataset_dir data
       flags:
         $include:
-          - train-support
-          - dataset-support
-        checkpoint:
-          description: Checkpoint containing pre-trained weights to fine-tune
+          - train-flags
+          - dataset-flags
+        trained-model:
+          description: Pretrained model to use for transfer learning.
           default: mobilenet_v1
           choices:
             - value: mobilenet_v1
@@ -123,9 +132,9 @@
       requires:
         - slim-models-lib
         - prepared-dataset
-        - ${checkpoint}-checkpoint
+        - ${trained-model}-pretrained
     evaluate:
-      description: Evaluate a trained model
+      description: Evaluate a trained model.
       main: >
         gpkg/slim/slim_op eval_image_classifier
           --eval_dir .
@@ -134,31 +143,31 @@
           --checkpoint_path model
       flags:
         $include:
-          - network-support
-          - dataset-support
+          - network-flags
+          - dataset-flags
         max-batches:
-          description: Maximum number of batches to evaluate (default is all)
+          description: Maximum number of batches to evaluate (default is all).
           arg-name: max_num_batches
       requires:
         - slim-models-lib
         - checkpoint
         - prepared-dataset
     export:
-      description: Export trained graph def
+      description: Export trained graph def.
       main: >
         gpkg/slim/slim_op export_inference_graph
           --dataset_dir data
           --output_file exported.pb
       flags:
         $include:
-          - network-support
-          - dataset-support
+          - network-flags
+          - dataset-flags
       requires:
         - slim-models-lib
         - checkpoint
         - prepared-dataset
     freeze:
-      description: Freeze graph with checkpoint variables
+      description: Freeze graph with checkpoint variables.
       main: >
         gpkg/slim/slim_op tensorflow/python/tools/freeze_graph
           --input_graph exported.pb
@@ -167,7 +176,7 @@
           --output_graph frozen.pb
       flags:
         network:
-          description: Network architecture used to freeze graph
+          description: Network architecture used to freeze graph.
           default: mobilenet_v1
           arg-skip: yes
           choices:
@@ -179,11 +188,11 @@
         - checkpoint
         - exported-model
     tflite:
-      description: Generate tflite file from a frozen graph using toco
+      description: Generate tflite file from a frozen graph using toco.
       main: >
 
     classify:
-      description: Classify an image using a frozen graph
+      description: Classify an image using a frozen graph.
       main: >
         label_image
           --input_layer input
@@ -195,10 +204,10 @@
           --input_height 224
       flags:
         image:
-          description: Image to classify
+          description: Image to classify.
           required: yes
         network:
-          description: Network architecture of frozen graph (used for named output layer)
+          description: Network architecture of frozen graph (used for named output layer).
           default: mobilenet_v1
           arg-skip: yes
           choices:
@@ -210,24 +219,24 @@
         - prepared-dataset
   resources:
     slim-models-lib:
-      description: TF-Slim models lib
+      description: TF-Slim models lib.
       sources:
         - url: https://github.com/tensorflow/models/archive/c7c3970c0983290bd67e98aa0a93043fe09e1390.zip
           sha256: 2b70567e2cf6caef26eb596986732983d6509e9feec4054f4a763fc7cb313a1d
           select: models-c7c3970c0983290bd67e98aa0a93043fe09e1390/research/slim
     dogs-vs-cats:
-      description: Dogs vs cats dataset from Kaggle competition
+      description: Dogs vs cats dataset from Kaggle competition.
       sources:
         - url: https://s3.amazonaws.com/guild-pub/kaggle-dogs-vs-cats/train.zip
           sha256: 36fbbfb947aeffeaf6f8ddf5178cd43d1b74aae150dff942eadb07df7929a6d7
     prepared-dataset:
-      description: Prepared data (use prepare-data operation)
+      description: Prepared data (use prepare-data operation).
       sources:
         - operation: prepare-data
           select: data
           help: Try 'guild run prepare-data'
     checkpoint:
-      description: Model checkpoint (use train or finetune operation)
+      description: Model checkpoint (use train or finetune operation).
       path: model
       sources:
         - operation: train,finetune
@@ -236,19 +245,19 @@
             - model\.ckpt.*
           help: Try 'guild run train' or 'guild run finetune'
     exported-model:
-      description: Exported model (use export operation)
+      description: Exported model (use export operation).
       sources:
         - operation: export
           select: exported.pb
           help: Try 'guild run export'
     frozen-model:
-      description: Frozen model (use freeze operation)
+      description: Frozen model (use freeze operation).
       sources:
         - operation: freeze
           select: frozen.pb
           help: Try 'guild run freeze'
-    mobilenet_v1-checkpoint:
-      description: MobileNet v1 checkpoint - 89.9% top-5 acc
+    mobilenet_v1-pretrained:
+      description: MobileNet v1 pretrained model - 89.9% top-5 acc.
       sources:
         - url: http://download.tensorflow.org/models/mobilenet_v1_2018_02_22/mobilenet_v1_1.0_224.tgz
           sha256: 1ccb74dbd9c5f7aea879120614e91617db9534bdfaa53dfea54b7c14162e126b
