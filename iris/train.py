@@ -22,8 +22,7 @@ def main():
     evaluate(model, data, args)
 
 def parse_args():
-    """Parse command line arguments.
-    """
+    """Parse command line arguments."""
     parser = argparse.ArgumentParser()
     parser.add_argument('--train-steps', default=1000, type=int)
     parser.add_argument('--batch-size', default=100, type=int)
@@ -32,13 +31,11 @@ def parse_args():
     return parser.parse_args()
 
 def init_data(_args):
-    """Initialize data for training and evaluation.
-    """
+    """Initialize data for training and evaluation."""
     return iris_data.load_data()
 
 def init_model(data, args):
-    """Initialize the model for training.
-    """
+    """Initialize the model for training."""
     train_x = data[0][0]
     feature_columns = [
         tf.feature_column.numeric_column(key=key)
@@ -51,16 +48,14 @@ def init_model(data, args):
         model_dir=args.model_dir)
 
 def train(model, data, args):
-    """Train the model.
-    """
+    """Train the model."""
     (train_x, train_y), _ = data
     input_fn = lambda: iris_data.train_input_fn(
         train_x, train_y, args.batch_size)
     model.train(input_fn=input_fn, steps=args.train_steps)
 
 def evaluate(model, data, args):
-    """Evaluate the trained model.
-    """
+    """Evaluate the trained model."""
     _, (test_x, test_y) = data
     input_fn = lambda: iris_data.eval_input_fn(
         test_x, test_y, args.batch_size)
