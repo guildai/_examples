@@ -1,6 +1,7 @@
-- package: tflite-example
-  version: 0.0.0
-  author-email: packages@guilda.ai
+- package: tflite_example
+  requires:
+    - slim
+    - slim.datasets
 
 - config: network-flags
   flags:
