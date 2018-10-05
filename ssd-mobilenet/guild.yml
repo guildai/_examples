@@ -1,0 +1,69 @@
+# ===================================================================
+# Package def
+# ===================================================================
+
+- package: detector
+  requires:
+    - gpkg.object-detect
+
+# ===================================================================
+# Images
+# ===================================================================
+
+- model: images
+  description: Annotated images
+  extends:
+    - gpkg.object-detect/voc-annotated-images-base
+  params:
+    annotations-path: annotations
+    images-path: images
+  operations:
+    prepare:
+      main: >
+        gpkg.object-detect/voc_images_prepare
+          --annotations-dir ${data}/{{annotations-path}}
+          --images-dir ${data}/{{images-path}}
+      requires:
+        - models-lib
+      flags:
+        data:
+          description: >
+            Directory containing annotated image data
+
+            Directory must contain '{{annotations-path}}' and
+            '{{images-path}}' that contain the image annotations in
+            Pascal VOC format and the images themselves respectively.
+          required: yes
+          arg-skip: yes
+
+# ===================================================================
+# Detectors
+# ===================================================================
+
+- model: ssd-mobilenet-v1
+  description: Object detector using SSD with MobileNet v1
+  default: yes
+  extends:
+    - gpkg.object-detect/examples-support
+    - gpkg.object-detect/ssd-base
+  params:
+    transfer-learn-pipeline-config-proto: ssd_mobilenet_v1_0.75_depth_300x300_coco14_sync.config
+  resources:
+    transfer-learn-checkpoint:
+      path: checkpoint
+      sources:
+        - url: http://download.tensorflow.org/models/object_detection/ssd_mobilenet_v1_0.75_depth_300x300_coco14_sync_2018_07_03.tar.gz
+          sha256: 22fde2e0ec776ea63470c21528cbf6dc58d2cbd0b2bacce15314f2f4b80c1f20
+          select:
+            - ssd_mobilenet_v1_0.75_depth_300x300_coco14_sync_2018_07_03/model\.ckpt.*
+            - ssd_mobilenet_v1_0.75_depth_300x300_coco14_sync_2018_07_03/checkpoint
+    model-config:
+      sources:
+        - ssd_mobilenet_v1_0.75_depth_300x300_coco14_sync.config
+
+- model: ssd-mobilenet-v2
+  description: Object detector using SSD with MobileNet v1
+  default: yes
+  extends:
+    - gpkg.object-detect/examples-support
+    - gpkg.object-detect/ssd-mobilenet-v2
