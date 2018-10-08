@@ -1,0 +1,21 @@
+- model: fashion
+  operations:
+    prepare-data:
+      main: prepare_data --output-dir .
+    train:
+      main: >
+        train
+          --data-dir data
+          --log-dir .
+          --checkpoint-dir .
+      requires: prepared-data
+      flags:
+        epochs:
+          description: Number of epochs to train
+          default: 5
+  resources:
+    prepared-data:
+      path: data
+      sources:
+        - operation: prepare-data
+          select: .*\.npy
