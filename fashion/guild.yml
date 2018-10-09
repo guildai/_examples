@@ -8,11 +8,7 @@
       main: prepare_data --output-dir .
     train:
       description: Train fashion classifier.
-      main: >
-        train
-          --data-dir data
-          --log-dir .
-          --checkpoint-dir .
+      main: train --data-dir data --log-dir . --checkpoint-dir .
       requires: prepared-data
       label-template: epochs=${epochs} lr=${learning-rate}
       flags:
@@ -24,15 +20,11 @@
           default: 0.001
     predict:
       description: Use trained model to make predictions.
-      main: >
-        predict
-          --data-dir data
-          --checkpoint-dir model
-          --output-dir .
+      main: predict --data-dir data --checkpoint-dir model --output-dir .
       requires:
         - prepared-data
         - trained-model
-      label-template: model=${trained-model} epoch=${checkpoint-epoch|default:latest}
+      label-template: model=${trained-model}
       flags:
         count:
           description: Number of images to predict
