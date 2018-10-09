@@ -13,9 +13,34 @@
         epochs:
           description: Number of epochs to train
           default: 5
+    predict:
+      main: >
+        predict
+          --data-dir data
+          --checkpoint-dir model
+          --output-dir .
+      requires:
+        - prepared-data
+        - trained-model
+      flags:
+        count:
+          description: Number of images to predict
+          null-label: 5, unless range is specified
+        range:
+          description: Range of images to predict
+          null-label: unspecified
+        errors-only:
+          description: Only show incorrect predictions
+          default: no
+          arg-switch: yes
   resources:
     prepared-data:
       path: data
       sources:
         - operation: prepare-data
-          select: .*\.npy
+          select: .+\.npy
+    trained-model:
+      path: model
+      sources:
+        - operation: train
+          select: weights-.+\.hdf5

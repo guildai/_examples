@@ -16,20 +16,25 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
+
 import matplotlib
 matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
-def write_image(img, path):
-    plt.figure()
-    plt.imshow(img)
+import dataset
+
+def write_image(image, path):
+    f = plt.figure()
+    plt.imshow(image)
     plt.colorbar()
     plt.grid(False)
     plt.savefig(path)
+    plt.close(f)
 
 def write_image_grid(images, labels, path):
-    plt.figure(figsize=(10, 10))
+    f = plt.figure(figsize=(10, 10))
     for i, image, label in zip(range(len(images)), images, labels):
         plt.subplot(5, 5, i + 1)
         plt.xticks([])
@@ -38,3 +43,42 @@ def write_image_grid(images, labels, path):
         plt.imshow(image, cmap=plt.cm.binary)
         plt.xlabel(label)
         plt.savefig(path)
+    plt.close(f)
+
+def write_image_prediction(prediction, image, image_label, path):
+    f = plt.figure(figsize=(6, 3))
+    plt.subplot(1, 2, 1)
+    _plot_predicted_image(prediction, image, image_label)
+    plt.subplot(1, 2, 2)
+    _plot_predicted_label(prediction, image_label)
+    plt.savefig(path)
+    plt.close(f)
+
+def _plot_predicted_image(prediction, image, image_label):
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+    plt.imshow(image, cmap=plt.cm.binary)
+    predicted_label = np.argmax(prediction)
+    if predicted_label == image_label:
+        color = "blue"
+        error_suffix = ""
+    else:
+        color = "red"
+        error_suffix = "\n(actually %s)" % dataset.class_names[image_label]
+    caption = "%s %0.2f%s" % (
+        dataset.class_names[predicted_label],
+        100 * np.max(prediction),
+        error_suffix)
+    plt.xlabel(caption, color=color)
+
+def _plot_predicted_label(prediction, image_label):
+    plt.grid(False)
+    plt.xticks([])
+    plt.yticks([])
+    class_count = len(dataset.class_names)
+    chart = plt.bar(range(class_count), prediction, color="#777777")
+    plt.ylim([0, 1])
+    predicted_label = np.argmax(prediction)
+    chart[predicted_label].set_color("red")
+    chart[image_label].set_color("blue")

@@ -16,6 +16,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import glob
+import os
+import re
+
 import tensorflow as tf
 
 from tensorflow import keras
@@ -31,3 +35,37 @@ def init():
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
     return model
+
+def checkpoint_callback(checkpoint_dir):
+    file_pattern = os.path.join(
+        checkpoint_dir,
+        "weights-{epoch:02d}-{loss:0.3f}.hdf5")
+    return keras.callbacks.ModelCheckpoint(file_pattern)
+
+def load(checkpoint_dir, epoch=None):
+    model = init()
+    model.load_weights(_checkpoint_path(checkpoint_dir, epoch))
+    return model
+
+def _checkpoint_path(checkpoint_dir, epoch):
+    epoch = epoch or _latest_epoch(checkpoint_dir)
+    pattern = os.path.join(checkpoint_dir, "weights-%s-*.hdf5" % epoch)
+    matches = glob.glob(pattern)
+    if not matches:
+        raise RuntimeError(
+            "cannot find Keras checkpoint matching %s"
+            % pattern)
+    return matches[0]
+
+def _latest_epoch(checkpoint_dir):
+    latest = None
+    for name in os.listdir(checkpoint_dir):
+        m = re.search(r"weights-(\d+)-.+\.hdf5$", name)
+        if m:
+            if latest is None or int(m.group(1)) > int(latest):
+                latest = m.group(1)
+    if latest is None:
+        raise RuntimeError(
+            "cannot find latest Keras checkpoint in %s"
+            % checkpoint_dir)
+    return latest
