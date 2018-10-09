@@ -39,7 +39,7 @@ def init(**optimizer_kw):
 def checkpoint_callback(checkpoint_dir):
     file_pattern = os.path.join(
         checkpoint_dir,
-        "weights-{epoch:02d}-{loss:0.3f}.hdf5")
+        "weights-{epoch:04d}-{loss:0.3f}.hdf5")
     return keras.callbacks.ModelCheckpoint(file_pattern)
 
 def load(checkpoint_dir, epoch=None):
@@ -49,7 +49,7 @@ def load(checkpoint_dir, epoch=None):
 
 def _checkpoint_path(checkpoint_dir, epoch):
     if epoch:
-        epoch = "{:02d}".format(epoch)
+        epoch = "{:04d}".format(epoch)
     else:
         epoch = _latest_epoch(checkpoint_dir)
     pattern = os.path.join(checkpoint_dir, "weights-%s-*.hdf5" % epoch)
