@@ -32,6 +32,7 @@ logging.basicConfig(
 log = logging.getLogger()
 
 DEFAULT_EPOCHS = 5
+DEFAULT_LR = 0.001
 DEFAULT_DATA_DIR = "/tmp/fashion-data"
 DEFAULT_CHECKPOINT_DIR = "/tmp/fashion-train"
 DEFAULT_LOG_DIR = "/tmp/fashion-train"
@@ -39,7 +40,7 @@ DEFAULT_LOG_DIR = "/tmp/fashion-train"
 def main(argv):
     args = _init_args(argv)
     data = _load_data(args)
-    model = _init_model()
+    model = _init_model(args)
     _init_output_dirs(args)
     _train_model(model, data, args)
     _test_model(model, data)
@@ -50,6 +51,9 @@ def _init_args(argv):
         "-e", "--epochs",
         default=DEFAULT_EPOCHS, type=int,
         help="number of epochs to train (%s)" % DEFAULT_EPOCHS)
+    p.add_argument(
+        "-r", "--learning-rate", default=DEFAULT_LR, type=float,
+        help="learning rate")
     p.add_argument(
         "-d", "--data-dir",
         default=DEFAULT_DATA_DIR,
@@ -68,8 +72,8 @@ def _load_data(args):
     log.info("Loading data from %s", args.data_dir)
     return dataset.load(args.data_dir)
 
-def _init_model():
-    return model.init()
+def _init_model(args):
+    return model.init(learning_rate=args.learning_rate)
 
 def _init_output_dirs(args):
     log.info("Checkpoints will be written to %s", args.checkpoint_dir)

@@ -1,19 +1,31 @@
 - model: fashion
+  description: Classifier trained using Fashion MNIST dataset.
+  references:
+    - https://www.tensorflow.org/tutorials/keras/basic_classification
+    - https://github.com/tensorflow/docs/blob/master/site/en/tutorials/keras/basic_classification.ipynb
+    - https://github.com/zalandoresearch/fashion-mnist
   operations:
     prepare-data:
+      description: Prepare images for training.
       main: prepare_data --output-dir .
     train:
+      description: Train fashion classifier.
       main: >
         train
           --data-dir data
           --log-dir .
           --checkpoint-dir .
       requires: prepared-data
+      label-template: epochs=${epochs} lr=${learning-rate}
       flags:
         epochs:
           description: Number of epochs to train
           default: 5
+        learning-rate:
+          description: Learning rate
+          default: 0.001
     predict:
+      description: Use trained model to make predictions.
       main: >
         predict
           --data-dir data
@@ -22,10 +34,11 @@
       requires:
         - prepared-data
         - trained-model
+      label-template: model=${trained-model} epoch=${checkpoint-epoch|default:latest}
       flags:
         count:
           description: Number of images to predict
-          null-label: 5, unless range is specified
+          null-label: 5 or ignored if range is used
         range:
           description: Range of images to predict
           null-label: unspecified
@@ -33,13 +46,18 @@
           description: Only show incorrect predictions
           default: no
           arg-switch: yes
+        checkpoint-epoch:
+          description: Checkpoint epoch used for predictions
+          null-label: latest
   resources:
     prepared-data:
+      description: Preprocesed images using prepare-data.
       path: data
       sources:
         - operation: prepare-data
           select: .+\.npy
     trained-model:
+      description: Trained model using train.
       path: model
       sources:
         - operation: train

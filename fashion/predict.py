@@ -74,7 +74,7 @@ def _init_args(argv):
         help=("directory containing model checkpoints (%s)"
               % DEFAULT_CHECKPOINT_DIR))
     p.add_argument(
-        "-e", "--checkpoint-epoch",
+        "-e", "--checkpoint-epoch", type=int,
         help="checkpoint epoch to use (latest available)")
     p.add_argument(
         "-o", "--output-dir", default=DEFAULT_OUTPUT_DIR,
@@ -96,16 +96,17 @@ def _init_output_dir(args):
 def _predict(model, data, args):
     _, (test_images, test_labels) = data
     predictions = model.predict(test_images)
-    name_pattern = os.path.join(args.output_dir, "{:05d}")
+    name_pattern = os.path.join(args.output_dir, "{:05d}{}")
     indexes = _example_indexes(predictions, test_labels, args)
     log.info("Generating predictions for %i test image(s)", len(indexes))
     start = time.time()
     for i in indexes:
+        suffix = _predict_file_suffix(predictions[i], test_labels[i])
         fig.write_image_prediction(
             predictions[i],
             test_images[i],
             test_labels[i],
-            name_pattern.format(i)
+            name_pattern.format(i, suffix)
         )
         _tick(start)
     _tick(start, nl=True)
@@ -151,6 +152,12 @@ def _random_error_indexes(index_count, predictions, labels):
     while len(indexes) < index_count and errors:
         indexes.append(errors.pop(np.random.randint(len(errors))))
     return indexes
+
+def _predict_file_suffix(prediction, label):
+    if np.argmax(prediction) != label:
+        return "-error"
+    else:
+        return ""
 
 def _tick(start, nl=False):
     if time.time() > start + 2:

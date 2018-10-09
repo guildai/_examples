@@ -24,14 +24,14 @@ import tensorflow as tf
 
 from tensorflow import keras
 
-def init():
+def init(**optimizer_kw):
     model = keras.Sequential([
         keras.layers.Flatten(input_shape=(28, 28)),
         keras.layers.Dense(128, activation=tf.nn.relu),
         keras.layers.Dense(10, activation=tf.nn.softmax)
     ])
     model.compile(
-        optimizer=tf.train.AdamOptimizer(),
+        optimizer=tf.train.AdamOptimizer(**optimizer_kw),
         loss='sparse_categorical_crossentropy',
         metrics=['accuracy'])
     return model
@@ -48,7 +48,10 @@ def load(checkpoint_dir, epoch=None):
     return model
 
 def _checkpoint_path(checkpoint_dir, epoch):
-    epoch = epoch or _latest_epoch(checkpoint_dir)
+    if epoch:
+        epoch = "{:02d}".format(epoch)
+    else:
+        epoch = _latest_epoch(checkpoint_dir)
     pattern = os.path.join(checkpoint_dir, "weights-%s-*.hdf5" % epoch)
     matches = glob.glob(pattern)
     if not matches:
