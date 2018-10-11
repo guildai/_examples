@@ -1,0 +1,30 @@
+- package: example
+  requires:
+    - gpkg.slim
+    - gpks.tfserve
+
+- model: flowers
+  description: Flowers classifier using ResNet 50
+  extends:
+    - gpkg.slim/examples-support
+    - gpkg.slim/resnet-50
+    - gpkg.tfserve/image-classifier
+  params:
+    tfserve-graph: frozen_graph.pb
+    tfserve-labels: data/labels.txt
+    tfserve-image-width: 224
+    tfserve-image-height: 224
+    tfserve-input-layer: import/input:0
+    tfserve-output-layer: import/resnet_v1_50/predictions/Reshape_1
+  operations:
+    prepare:
+      description: Prepare model for training.
+      main: gpkg.slim/images_prepare --images-dir flower_photos
+      requires:
+        - models-lib
+        - flower-photos
+  resources:
+    flower-photos:
+      sources:
+        - url: http://download.tensorflow.org/example_images/flower_photos.tgz
+          sha256: 4c54ace7911aaffe13a365c34f650e71dd5bf1be0a58b464e5a7183e3e595d9c
