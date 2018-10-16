@@ -124,25 +124,23 @@ def _train_model(model, data, args):
         callbacks=_train_callbacks(args))
 
 def _train_callbacks(args):
-    cbs = [
-        tf.keras.callbacks.TensorBoard(log_dir=args.log_dir)
+    return [
+        _tensorboard_callback(args),
+        _checkpoint_callback(args),
     ]
-    checkpoint_cb = _try_checkpoint_callback(args.checkpoint_dir)
-    if checkpoint_cb:
-        cbs.append(checkpoint_cb)
-    return cbs
 
-def _try_checkpoint_callback(checkpoint_dir):
-    try:
-        import h5py
-    except ImportError:
-        log.warning("h5py is not available - checkpoints are disabled")
-        return None
-    else:
-        file_pattern = os.path.join(
-            checkpoint_dir,
-            "weights-{epoch:04d}-{loss:0.3f}.hdf5")
-        return keras.callbacks.ModelCheckpoint(file_pattern)
+def _tensorboard_callback(args):
+    return tf.keras.callbacks.TensorBoard(log_dir=args.log_dir)
+
+def _checkpoint_callback(args):
+    _ensure_h5py()
+    file_pattern = os.path.join(
+        args.checkpoint_dir,
+        "weights-{epoch:04d}-{loss:0.3f}.hdf5")
+    return keras.callbacks.ModelCheckpoint(file_pattern)
+
+def _ensure_h5py():
+    import h5py as _
 
 def _test_model(model, data):
     log.info("Evaluating trained model")
