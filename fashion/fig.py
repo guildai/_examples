@@ -23,7 +23,7 @@ matplotlib.use('Agg')
 
 import matplotlib.pyplot as plt
 
-import dataset
+import train
 
 def write_image(image, path):
     f = plt.figure()
@@ -65,9 +65,9 @@ def _plot_predicted_image(prediction, image, image_label):
         error_suffix = ""
     else:
         color = "red"
-        error_suffix = "\n(actually %s)" % dataset.class_names[image_label]
+        error_suffix = "\n(actually %s)" % train.class_names[image_label]
     caption = "%s %0.2f%s" % (
-        dataset.class_names[predicted_label],
+        train.class_names[predicted_label],
         100 * np.max(prediction),
         error_suffix)
     plt.xlabel(caption, color=color)
@@ -76,7 +76,7 @@ def _plot_predicted_label(prediction, image_label):
     plt.grid(False)
     plt.xticks([])
     plt.yticks([])
-    class_count = len(dataset.class_names)
+    class_count = len(train.class_names)
     chart = plt.bar(range(class_count), prediction, color="#777777")
     plt.ylim([0, 1])
     predicted_label = np.argmax(prediction)

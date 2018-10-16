@@ -21,18 +21,18 @@ import logging
 import os
 import sys
 
+import numpy as np
+
 import tensorflow as tf
 
-import dataset
 import fig
+import train
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(levelname)s %(message)s")
 
 log = logging.getLogger()
-
-DEFAULT_OUTPUT_DIR = "/tmp/fashion-data"
 
 def main(argv):
     args = _init_args(argv)
@@ -41,13 +41,13 @@ def main(argv):
     _write_sample_raw_images(raw_data, args)
     processed_data = _process_data(raw_data)
     _write_sample_processed_images(processed_data, args)
-    _save_data(processed_data, args)
+    _save_data(processed_data, args.output_dir)
 
 def _init_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
-        "-o", "--output-dir", default=DEFAULT_OUTPUT_DIR,
-        help="directory to save output (%s)" % DEFAULT_OUTPUT_DIR)
+        "-o", "--output-dir", default=".",
+        help="directory to save output (default is current directory)")
     return p.parse_args(argv[1:])
 
 def _init_output_dir(args):
@@ -56,7 +56,7 @@ def _init_output_dir(args):
 
 def _load_raw_data():
     log.info("Loading raw data")
-    return dataset.load()
+    return train.load_data()
 
 def _write_sample_raw_images(data, args):
     log.info("Writing sample raw images")
@@ -81,12 +81,16 @@ def _write_sample_processed_images(data, args):
         train_labels[:25],
         _output_path("sample-processed.png", args))
 
-def _save_data(data, args):
+def _save_data(data, output_dir):
     log.info("Writing processed data")
-    dataset.save(data, args.output_dir)
+    (train_images, train_labels), (test_images, test_labels) = data
+    np.save(os.path.join(output_dir, "train-images"), train_images)
+    np.save(os.path.join(output_dir, "train-labels"), train_labels)
+    np.save(os.path.join(output_dir, "test-images"), test_images)
+    np.save(os.path.join(output_dir, "test-labels"), test_labels)
 
 def _write_sample_images(images, labels, name):
-    labels = [dataset.class_names[label_id] for label_id in labels]
+    labels = [train.class_names[label_id] for label_id in labels]
     fig.write_image_grid(images, labels, name)
 
 def _output_path(name, args):

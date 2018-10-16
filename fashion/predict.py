@@ -17,6 +17,7 @@ from __future__ import division
 from __future__ import print_function
 
 import argparse
+import glob
 import logging
 import os
 import re
@@ -27,9 +28,8 @@ import numpy as np
 
 import tensorflow as tf
 
-import dataset
 import fig
-import model
+import train
 
 logging.basicConfig(
     level=logging.INFO,
@@ -83,11 +83,38 @@ def _init_args(argv):
 
 def _load_model(args):
     log.info("Loading trained model from %s", args.checkpoint_dir)
-    return model.load(args.checkpoint_dir, args.checkpoint_epoch)
+    model = train.init_model()
+    model.load_weights(_checkpoint_path(args))
+    return model
+
+def _checkpoint_path(args):
+    if args.checkpoint_epoch:
+        epoch = "{:04d}".format(args.checkpoint_epoch)
+    else:
+        epoch = _latest_epoch(args.checkpoint_dir)
+    pattern = os.path.join(args.checkpoint_dir, "weights-%s-*.hdf5" % epoch)
+    matches = glob.glob(pattern)
+    if not matches:
+        raise RuntimeError(
+            "cannot find Keras checkpoint matching %s"
+            % pattern)
+    return matches[0]
+
+def _latest_epoch(checkpoint_dir):
+    latest = None
+    for name in os.listdir(checkpoint_dir):
+        m = re.search(r"weights-(\d+)-.+\.hdf5$", name)
+        if m:
+            if latest is None or int(m.group(1)) > int(latest):
+                latest = m.group(1)
+    if latest is None:
+        raise RuntimeError(
+            "cannot find latest Keras checkpoint in %s"
+            % checkpoint_dir)
+    return latest
 
 def _load_data(args):
-    log.info("Loading data from %s", args.data_dir)
-    return dataset.load(args.data_dir)
+    return train.load_data(args.data_dir)
 
 def _init_output_dir(args):
     log.info("Output directory is %s", args.output_dir)

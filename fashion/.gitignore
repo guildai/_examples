@@ -1,0 +1,4 @@
+weights-*.hdf5
+events.out.tfevents.*
+sample-*.png
+*.npy
