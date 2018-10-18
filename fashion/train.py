@@ -80,8 +80,8 @@ def load_data(from_dir=None):
     if from_dir:
         log.info("Loading data from %s", from_dir)
         return _load_prepared_data(from_dir)
-    fashion_mnist = keras.datasets.fashion_mnist
-    return fashion_mnist.load_data()
+    log.info("Loading raw data")
+    return _load_and_process_raw_data()
 
 def _load_prepared_data(dir):
     return (
@@ -89,6 +89,17 @@ def _load_prepared_data(dir):
          np.load(os.path.join(dir, "train-labels.npy"))),
         (np.load(os.path.join(dir, "test-images.npy")),
          np.load(os.path.join(dir, "test-labels.npy"))))
+
+def _load_and_process_raw_data():
+    fashion_mnist = keras.datasets.fashion_mnist
+    return _process_data(fashion_mnist.load_data())
+
+def _process_data(data):
+    log.info("Processing data")
+    (train_images, train_labels), (test_images, test_labels) = data
+    train_images = train_images / 255.0
+    test_images = test_images / 255.0
+    return (train_images, train_labels), (test_images, test_labels)
 
 def init_model(**optimizer_kw):
     model = keras.Sequential([

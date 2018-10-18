@@ -71,7 +71,7 @@ def _process_data(data):
     (train_images, train_labels), (test_images, test_labels) = data
     train_images = train_images / 255.0
     test_images = test_images / 255.0
-    return ((train_images, train_labels), (test_images, test_labels))
+    return (train_images, train_labels), (test_images, test_labels)
 
 def _write_sample_processed_images(data, args):
     log.info("Writing sample processed images")

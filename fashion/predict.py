@@ -37,11 +37,6 @@ logging.basicConfig(
 
 log = logging.getLogger()
 
-DEFAULT_DATA_DIR = "/tmp/fashion-data"
-DEFAULT_CHECKPOINT_DIR = "/tmp/fashion-train"
-DEFAULT_OUTPUT_DIR = "/tmp/fashion-predict"
-DEFAULT_COUNT = 5
-
 def main(argv):
     args = _init_args(argv)
     model = _load_model(args)
@@ -53,8 +48,7 @@ def _init_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
         "-n", "--count", default=None, type=int,
-        help=("number of randomly selected examples to predict (%s)"
-              % DEFAULT_COUNT))
+        help="number of randomly selected examples to predict (5)")
     p.add_argument(
         "-r", "--range",
         help=("range of examples to predict in the format START[:STOP] "
@@ -66,22 +60,28 @@ def _init_args(argv):
         help="only show incorrect predictions")
     p.add_argument(
         "-d", "--data-dir",
-        default=DEFAULT_DATA_DIR,
-        help="directory containing prepare data (%s)" % DEFAULT_DATA_DIR)
+        help=(
+            "directory containing prepare data (default is to "
+            "download raw data)"))
     p.add_argument(
         "-c", "--checkpoint-dir",
-        default=DEFAULT_DATA_DIR,
-        help=("directory containing model checkpoints (%s)"
-              % DEFAULT_CHECKPOINT_DIR))
+        default="model",
+        help=(
+            "directory containing model checkpoints (default is 'model' "
+            "subdirectory)"))
     p.add_argument(
         "-e", "--checkpoint-epoch", type=int,
         help="checkpoint epoch to use (latest available)")
     p.add_argument(
-        "-o", "--output-dir", default=DEFAULT_OUTPUT_DIR,
-        help="directory to save output (%s)" % DEFAULT_OUTPUT_DIR)
+        "-o", "--output-dir", default=".",
+        help="directory to save output (default is current directory)")
     return p.parse_args(argv[1:])
 
 def _load_model(args):
+    if not os.path.exists(args.checkpoint_dir):
+        raise SystemExit(
+            "predict: checkpoint directory %s does not exist"
+            % args.checkpoint_dir)
     log.info("Loading trained model from %s", args.checkpoint_dir)
     model = train.init_model()
     model.load_weights(_checkpoint_path(args))
@@ -95,8 +95,8 @@ def _checkpoint_path(args):
     pattern = os.path.join(args.checkpoint_dir, "weights-%s-*.hdf5" % epoch)
     matches = glob.glob(pattern)
     if not matches:
-        raise RuntimeError(
-            "cannot find Keras checkpoint matching %s"
+        raise SystemExit(
+            "predict: cannot find Keras checkpoint matching %s"
             % pattern)
     return matches[0]
 
@@ -108,8 +108,8 @@ def _latest_epoch(checkpoint_dir):
             if latest is None or int(m.group(1)) > int(latest):
                 latest = m.group(1)
     if latest is None:
-        raise RuntimeError(
-            "cannot find latest Keras checkpoint in %s"
+        raise SystemExit(
+            "predict: cannot find latest Keras checkpoint in %s"
             % checkpoint_dir)
     return latest
 
@@ -145,7 +145,7 @@ def _example_indexes(predictions, labels, args):
         return _filter_errors(range_indexes, predictions, labels, args)
     else:
         return _random_indexes(
-            args.count or DEFAULT_COUNT,
+            args.count or 5,
             predictions,
             labels,
             args.errors_only)
@@ -153,9 +153,9 @@ def _example_indexes(predictions, labels, args):
 def _example_range(range_s, examples_count):
     m = re.search(r"(\d+)(?::(\d+))?$", range_s)
     if not m:
-        raise ValueError(
-            "invalid range %s: must be in the format START[:STOP]"
-            % range_s)
+        raise SystemExit(
+            "predict: invalid range %s: must be in the "
+            "format START[:STOP]" % range_s)
     start = max(0, int(m.group(1)))
     stop = min((m.group(2) and int(m.group(2)) or (start + 1)), examples_count)
     return range(start, stop)
