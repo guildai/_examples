@@ -1,7 +1,5 @@
-- package: fashion
-
 - model: fashion
-  description: Basic fashion MNIST image classifier.
+  description: Basic Fashion-MNIST image classifier.
   references:
     - https://www.tensorflow.org/tutorials/keras/basic_classification
   operations:
@@ -78,3 +76,6 @@
         errors-only: yes
       expect:
         - file: '*-error.png'
+
+- package: fashion
+  version: 1.0
