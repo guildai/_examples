@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 - model: fashion
   description: Basic Fashion-MNIST image classifier.
   references:
