@@ -27,6 +27,10 @@ environment with `-p`, providing the path to the local packages repo:
 
 where `PACKAGES` is the path to the local cloned packages repo.
 
+Activate the environment:
+
+    $ source guild-env
+
 The project tests will run the sequence of operations needed to
 generate a tflite file. You can run the tests to demonstrate model
 features:
@@ -36,19 +40,19 @@ features:
 Alternatively, if you want to train the example to optimal accuracy,
 run the sequence beflow.
 
-Prepare the images for training:
+- Prepare the images for training:
 
     $ guild run prepare
 
-Use transfer learning from a model trained on ImageNet:
+- Use transfer learning from a model trained on ImageNet:
 
     $ guild run transfer-learn train-steps=5000
 
-Export and freeze the inference graph:
+- Export and freeze the inference graph:
 
     $ guild run export-and-freeze
 
-Finally, generate a `tflite` file:
+- Finally, generate a `tflite` file:
 
     $ guild run tflite
 
