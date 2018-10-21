@@ -44,6 +44,9 @@ run the sequence beflow.
     $ guild run transfer-learn train-steps=5000
     $ guild run export-and-freeze
     $ guild run tflite
+
+To get the full path to the generated `tflite` file, run:
+
     $ guild ls -o tflite -p model.tflite -f
 
 For help in using the `tflite` file, see *[Use the TensorFlow Lite
