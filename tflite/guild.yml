@@ -1,3 +1,9 @@
+- package: flowers-example
+  version: 1.0
+  requires:
+    - gpkg.slim
+    - gpkg.tflite
+
 - model: flowers
   description: Flowers classifier for mobile
   extends:
