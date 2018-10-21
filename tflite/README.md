@@ -40,22 +40,26 @@ features:
 Alternatively, if you want to train the example to optimal accuracy,
 run the sequence beflow.
 
-- Prepare the images for training:
+- Prepare the images for training
 
     $ guild run prepare
 
-- Use transfer learning from a model trained on ImageNet:
+- Use transfer learning from a model trained on ImageNet
 
     $ guild run transfer-learn train-steps=5000
 
-- Export and freeze the inference graph:
+- Export and freeze the inference graph
 
     $ guild run export-and-freeze
 
-- Finally, generate a `tflite` file:
+- Finally, generate a `tflite` file
 
     $ guild run tflite
 
-For help in using the `tflite` file in a mobile application, see *[Use
-the TensorFlow Lite model for inference in a mobile
+To get the full path to the generated `tflite` file, run:
+
+    $ guild ls -o tflite -p model.tflite -f
+
+For help in using the `tflite` file, see *[Use the TensorFlow Lite
+model for inference in a mobile
 app](https://www.tensorflow.org/lite/devguide#3_use_the_tensorflow_lite_model_for_inference_in_a_mobile_app)*.
