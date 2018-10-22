@@ -2,7 +2,7 @@
   operations:
     train:
       description: Train the MNIST model
-      main: '{{cmd_mod}} --datadir data --rundir .'
+      main: '{{main}} --datadir data --rundir .'
       flags:
         batch-size:
           description: Number of images to include in a training batch
@@ -13,7 +13,7 @@
       requires: data
     evaluate:
       description: Evaluate a trained model using test data
-      main: '{{cmd_mod}} --test --datadir data --rundir .'
+      main: '{{main}} --test --datadir data --rundir .'
       requires: [model, data]
   resources:
     model:
@@ -39,13 +39,13 @@
   description: MNIST model from TensorFlow intro tutorial
   extends: mnist-base
   params:
-    cmd_mod: intro
+    main: intro
 
 - model: mnist-expert
   description: MNIST model from TensorFlow expert tutorial
   extends: mnist-base
   params:
-    cmd_mod: expert
+    main: expert
   operations:
     train:
       flags:
