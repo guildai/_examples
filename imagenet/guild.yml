@@ -1,0 +1,24 @@
+- model: inception
+  description: Image classifier using Inception trained on ImageNet
+  operations:
+    classify:
+      description: Classify an image
+      main: classify_image_wrapper --model_dir model --image_file ${image}
+      requires:
+        - classify-image-script
+        - inception-model
+      flags:
+        image:
+          description: Image to classify
+          required: yes
+          arg-name: image_name
+  resources:
+    classify-image-script:
+      sources:
+        - url: https://raw.githubusercontent.com/tensorflow/models/86ecc9730d751c1f72e3bfecac958166390f4125/tutorials/image/imagenet/classify_image.py
+          sha256: f6ddbe32c635fd5599db6f0e5a0257c0ad8664c9737471f879f97ca98233da58
+    inception-model:
+      path: model
+      sources:
+        - url: http://download.tensorflow.org/models/image/imagenet/inception-2015-12-05.tgz
+          sha256: f6b539e07358fc4622efdd40cdb5577672c46cd416bbfccf9d4d2438f9b93a1c
