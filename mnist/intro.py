@@ -8,8 +8,8 @@ from tensorflow.examples.tutorials.mnist import input_data
 def init_flags():
     global FLAGS
     parser = argparse.ArgumentParser()
-    parser.add_argument("--datadir", default="/tmp/MNIST_data",)
-    parser.add_argument("--rundir", default="/tmp/MNIST_train")
+    parser.add_argument("--datadir", default="data")
+    parser.add_argument("--rundir", default=".")
     parser.add_argument("--batch_size", type=int, default=100)
     parser.add_argument("--epochs", type=int, default=10)
     parser.add_argument("--prepare", dest='just_data', action="store_true")
