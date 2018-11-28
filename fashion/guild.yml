@@ -10,7 +10,7 @@
       description: Train classifier from scratch.
       main: train --data-dir data --log-dir . --checkpoint-dir .
       requires: prepared-data
-      label-template: epochs=${epochs} lr=${learning-rate}
+      label: epochs=${epochs} lr=${learning-rate}
       flags:
         epochs:
           description: Number of epochs to train
@@ -24,11 +24,11 @@
       requires:
         - prepared-data
         - trained-model
-      label-template: model=${trained-model}
+      label: model=${trained-model}
       flags:
         count:
           description: Number of images to predict
-          null-label: 5 or ignored if range is used
+          null-label: 5 if range unspecified
         range:
           description: Range of images to predict
           null-label: unspecified
