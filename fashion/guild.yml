@@ -79,3 +79,4 @@
 
 - package: fashion
   version: 1.0
+  description: Basic Fashion-MNIST image classifier
