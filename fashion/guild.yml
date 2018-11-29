@@ -55,23 +55,23 @@
 
 - test: fashion
   steps:
-    - run-op: prepare-data
+    - run: prepare-data
       expect:
         - file: sample-*.png
         - file: test-images.npy
         - file: test-labels.npy
         - file: train-images.npy
         - file: train-labels.npy
-    - run-op: train
+    - run: train
       flags:
         epochs: 1
       expect:
         - file: events.out.tfevents.*
         - file: weights-0001-*.hdf5
-    - run-op: predict
+    - run: predict
       expect:
         - file: '*.png'
-    - run-op: predict
+    - run: predict
       flags:
         errors-only: yes
       expect:
