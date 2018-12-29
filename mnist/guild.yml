@@ -3,6 +3,7 @@
     train:
       description: Train the MNIST model
       main: '{{main}} --datadir data --rundir .'
+      requires: data
       flags:
         batch-size:
           description: Number of images to include in a training batch
@@ -10,7 +11,9 @@
         epochs:
           description: Number of epochs to train
           default: 10
-      requires: data
+      compare:
+        - train#loss as loss
+        - validate#accuracy as val_acc
     evaluate:
       description: Evaluate a trained model using test data
       main: '{{main}} --test --datadir data --rundir .'
