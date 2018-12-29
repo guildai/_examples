@@ -1,0 +1,8 @@
+- model: echo
+  operations:
+    say:
+      exec: echo ${message}
+      flags:
+        message:
+          arg-skip: yes
+          default: Hi there
