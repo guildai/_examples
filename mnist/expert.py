@@ -158,6 +158,7 @@ def save_model():
 def init_test():
     init_session()
     init_exported_collections()
+    init_test_writer()
 
 def init_exported_collections():
     global x, y_, accuracy
@@ -167,9 +168,15 @@ def init_exported_collections():
     y_ = sess.graph.get_tensor_by_name(tf.get_collection("y_")[0])
     accuracy = sess.graph.get_tensor_by_name(tf.get_collection("accuracy")[0])
 
+def init_test_writer():
+    global summaries, writer
+    summaries = tf.summary.merge_all()
+    writer = tf.summary.FileWriter(FLAGS.rundir)
+
 def test():
     data = {x: mnist.test.images, y_: mnist.test.labels}
-    test_accuracy = sess.run(accuracy, data)
+    test_accuracy, summary = sess.run([accuracy, summaries], data)
+    writer.add_summary(summary)
     print("Test accuracy=%f" % test_accuracy)
 
 if __name__ == "__main__":
