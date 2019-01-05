@@ -143,6 +143,7 @@ def maybe_log_accuracy(step, last_training_batch):
 def evaluate(step, data, writer, name):
     accuracy_val, summary = sess.run([accuracy, summaries], data)
     writer.add_summary(summary, step)
+    writer.flush()
     print("Step %i: %s=%f" % (step, name, accuracy_val))
 
 def maybe_save_model(step):
@@ -177,6 +178,7 @@ def test():
     data = {x: mnist.test.images, y_: mnist.test.labels}
     test_accuracy, summary = sess.run([accuracy, summaries], data)
     writer.add_summary(summary)
+    writer.flush()
     print("Test accuracy=%f" % test_accuracy)
 
 if __name__ == "__main__":
