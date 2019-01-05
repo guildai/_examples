@@ -54,4 +54,4 @@
         - '--foo'
     ignored-params:
       steps:
-        - step-1 --no-gpus --label hello
+        - step-1 --run-dir /tmp --background /tmp/pid
