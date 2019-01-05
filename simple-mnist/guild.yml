@@ -1,0 +1,44 @@
+
+
+
+
+
+
+
+######################################################################
+# Legacy config
+######################################################################
+
+model: ''
+operations:
+  train:
+    main: train
+    requires:
+      - mnist-data
+    flags:
+      $import: [epochs, batch_size]
+    compare:
+      - train#loss step as step
+      - train#loss as loss
+      - train#accuracy as accuracy
+  evaluate:
+    main: train --test
+    requires:
+      - trained-model
+      - mnist-data
+    compare:
+      - _ as step
+      - loss
+      - accuracy
+resources:
+  mnist-data:
+    path: data
+    sources:
+    - url: http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+    - url: http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+    - url: http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+    - url: http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+  trained-model:
+    sources:
+      - operation: train
+        select: model
