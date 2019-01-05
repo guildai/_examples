@@ -1,0 +1,57 @@
+# A messy example that illustrates various stepped operations.
+
+- model: steps
+  operations:
+
+    # Steps
+    step-1:
+      exec: echo hello from step-1
+    step-2:
+      exec: echo hello from step-2
+    step-3:
+      exec: echo ${msg}
+      flags:
+        msg:
+          default: hello from step-3
+          arg-skip: yes
+
+    # Stepped operations (e.g. workflows)
+    all-steps:
+      steps:
+        - step-1
+        - step-2
+        - step-2
+        - run: step-2
+          name: another-name-for-step-2
+        - step-3
+        - run: step-3 msg=${msg}
+          name: customized-step-3
+      flags:
+        msg: hello from all-steps
+    use-flag-steps:
+      steps:
+        - step-3 msg=${msg}
+      flags:
+        msg: hello from use-flag
+    steps-of-steps:
+      steps:
+        - step-1
+        - step-2
+        - use-flag-steps msg=${msg}
+      flags:
+        msg: null
+
+    # Various invalid or spurious stepped operations
+    invalid-1:
+      steps: {}
+    invalid-2:
+      steps: 123
+    invalid-3:
+      steps:
+        - {}
+    invalid-4:
+      steps:
+        - '--foo'
+    ignored-params:
+      steps:
+        - step-1 --no-gpus --label hello
