@@ -1,0 +1,6 @@
+# guild: tensorflow-any
+
+keras
+h5py
+scikit-optimize
+matplotlib
