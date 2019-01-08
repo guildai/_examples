@@ -41,12 +41,12 @@ from tensorflow.examples.tutorials.mnist import input_data as mnist_data
 
 # Data dimensions
 
-img_size = 28
-img_size_flat = img_size * img_size
-img_shape = (img_size, img_size)
-img_shape_full = (img_size, img_size, 1)
-num_channels = 1
-num_classes = 10
+IMG_SIZE = 28
+IMG_SIZE_flat = IMG_SIZE * IMG_SIZE
+##IMG_SHAPE = (IMG_SIZE, IMG_SIZE)
+IMG_SHAPE_FULL = (IMG_SIZE, IMG_SIZE, 1)
+##NUM_CHANNELS = 1
+NUM_CLASSES = 10
 
 def init_args():
     p = argparse.ArgumentParser()
@@ -59,6 +59,7 @@ def init_args():
     p.add_argument('--log-dir', default='./logs')
     p.add_argument('--data-dir', default='/tmp/MNIST_data')
     p.add_argument('--checkpoint-dir', default='./ckpt')
+    p.add_argument('--plots-dir', default='plots')
     return p.parse_args()
 
 def init_model(learning_rate, dense_layers, dense_nodes, activation):
@@ -75,11 +76,11 @@ def init_model(learning_rate, dense_layers, dense_nodes, activation):
 
     # Add an input layer which is similar to a feed_dict in TensorFlow.
     # Note that the input-shape must be a tuple containing the image-size.
-    model.add(layers.InputLayer(input_shape=(img_size_flat,)))
+    model.add(layers.InputLayer(input_shape=(IMG_SIZE_flat,)))
 
     # The input from MNIST is a flattened array with 784 elements,
     # but the convolutional layers expect images with shape (28, 28, 1)
-    model.add(layers.Reshape(img_shape_full))
+    model.add(layers.Reshape(IMG_SHAPE_FULL))
 
     # First convolutional layer.
     # There are many hyper-parameters in this layer, but we only
@@ -115,7 +116,7 @@ def init_model(learning_rate, dense_layers, dense_nodes, activation):
 
     # Last fully-connected / dense layer with softmax-activation
     # for use in classification.
-    model.add(layers.Dense(num_classes, activation='softmax'))
+    model.add(layers.Dense(NUM_CLASSES, activation='softmax'))
 
     # Use the Adam method for training the network.
     # We want to find the best learning-rate for the Adam method.
@@ -129,8 +130,14 @@ def init_model(learning_rate, dense_layers, dense_nodes, activation):
     return model
 
 def init_data(args):
-    return mnist_data.read_data_sets(args.data_dir, one_hot=True)
+    data = mnist_data.read_data_sets(args.data_dir, one_hot=True)
+    plot_samples(data, args)
 
+def plot_samples(data, args):
+    images = data.test.images[0:9]
+    cls_true = data.test.cls[0:9]
+    path = os.path.join(args.plot_dir, "samples.png")
+    util.plot_images(path, images, cls_true)
 
 def train_model(model, data, args):
     callbacks = [
