@@ -1,67 +1,67 @@
-model: hello
-description: >
-  A "hello world" sample model
+- model: hello
+  description: >
+    A "hello world" sample model
 
-  This is a sample model that provides various operations for printing
-  hello world messages.
+    This is a sample model that provides various operations for printing
+    hello world messages.
 
-  The message provided, either by default, by a flag, or a file (see
-  each operation for the applicable interface) is printed to standard
-  output and written to a file named `output` in the run directory.
+    The message provided, either by default, by a flag, or a file (see
+    each operation for the applicable interface) is printed to standard
+    output and written to a file named `output` in the run directory.
 
-operations:
-  default:
-    description: >
-      Print a default message
+  operations:
+    default:
+      description: >
+        Print a default message
 
-      This operation doesn't support a user-defined message. Use the
-      from-flag operation with the 'message' flag to print an
-      alternative message.
+        This operation doesn't support a user-defined message. Use the
+        from-flag operation with the 'message' flag to print an
+        alternative message.
 
-    main: say
+      main: say
 
-  from-flag:
-    description: >
-      Print a message
+    from-flag:
+      description: >
+        Print a message
 
-      Use the 'message' flag to specify the message to print.
+        Use the 'message' flag to specify the message to print.
 
-    main: say
-    flags:
-      message:
-        description: Message to print
-        default: Hello Guild, from a flag!
+      main: say
+      flags:
+        message:
+          description: Message to print
+          default: Hello Guild, from a flag!
 
-  from-file:
-    description: >
-      Print a message from a file
+    from-file:
+      description: >
+        Print a message from a file
 
-      Use the 'file' flag to specify the file to print.
+        Use the 'file' flag to specify the file to print.
 
-    main: say
-    requires: msg-file
-    flags:
-      file:
-        description: File containing the message to print
-        default: msg.txt
+      main: say
+      requires: msg-file
+      flags:
+        file:
+          description: File containing the message to print
+          default: msg.txt
 
-  from-file-output:
-    description: >
-      Print output from last file-output operation
+    from-file-output:
+      description: >
+        Print output from last file-output operation
 
-      This operation requires a completed file-output run.
+        This operation requires a completed file-output run.
 
-    main: say --file-output
-    requires: file-output
+      main: say --file-output
+      requires: file-output
 
-resources:
-  msg-file:
-    sources:
-      - file: msg.txt
-        sha256: 0bc96b4f4757a80c0a3f9b9bc14de789e5eb1d75659904de68241cfc7030e7de
+  resources:
+    msg-file:
+      sources:
+        - file: msg.txt
+          sha256: 0bc96b4f4757a80c0a3f9b9bc14de789e5eb1d75659904de68241cfc7030e7de
 
-  file-output:
-    path: from-file
-    sources:
-      - operation: from-file
-        select: output
+    file-output:
+      path: from-file
+      sources:
+        - operation: from-file
+          select: output
