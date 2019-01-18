@@ -5,16 +5,26 @@ import tensorflow as tf
 
 from tensorflow.examples.tutorials.mnist import input_data
 
-def init_flags():
-    global FLAGS
-    parser = argparse.ArgumentParser()
-    parser.add_argument("--datadir", default="data")
-    parser.add_argument("--rundir", default=".")
-    parser.add_argument("--batch_size", type=int, default=100)
-    parser.add_argument("--epochs", type=int, default=10)
-    parser.add_argument("--prepare", dest='just_data', action="store_true")
-    parser.add_argument("--test", action="store_true")
-    FLAGS, _ = parser.parse_known_args()
+p = argparse.ArgumentParser()
+p.add_argument(
+    "--datadir", default="data",
+    help="Location of MNIST data")
+p.add_argument(
+    "--rundir", default=".",
+    help="Location to write prepared data, logs and checkpoints")
+p.add_argument(
+    "--batch_size", type=int, default=100,
+    help="Batch size used for training")
+p.add_argument(
+    "--epochs", type=int, default=10,
+    help="Number of epochs to train")
+p.add_argument(
+    "--prepare", dest='just_data', action="store_true",
+    help="Just prepare data - don't train")
+p.add_argument(
+    "--test", action="store_true",
+    help="Evaluate a trained model with test data")
+FLAGS = p.parse_args()
 
 def init_data():
     global mnist
@@ -156,7 +166,6 @@ def test():
     print("Test accuracy=%f" % test_accuracy)
 
 if __name__ == "__main__":
-    init_flags()
     init_data()
     if FLAGS.just_data:
         pass
