@@ -14,11 +14,12 @@
       description: >
         Print a default message
 
-        This operation doesn't support a user-defined message. Use the
-        from-flag operation with the 'message' flag to print an
+        This operation does not support a user-defined message. Use
+        the from-flag operation with the 'message' flag to print an
         alternative message.
 
       main: say
+      flags: {}
 
     from-flag:
       description: >
@@ -52,6 +53,7 @@
         This operation requires a completed file-output run.
 
       main: say --file-output
+      flags: {}
       requires: file-output
 
   resources:
