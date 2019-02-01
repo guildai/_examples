@@ -5,30 +5,38 @@
       main: '{{main}} --datadir data --rundir .'
       requires: data
       compare:
+        - =epochs
+        - =batch-size
+        - =lr
         - train#loss step as step
         - train#loss as loss
         - validate#accuracy as accuracy
+      objective:
+        maximize: validate#accuracy
       flags:
         batch-size:
           description: Number of images to include in a training batch
           default: 100
+          required: yes
         epochs:
           description: Number of epochs to train
           default: 10
+        lr:
+          description: Training learning rate
+          default: 0.5
     evaluate:
       description: Evaluate a trained model using test data
       main: '{{main}} --test --datadir data --rundir .'
-      requires: [model, data]
+      requires:
+        - data
+        - sources:
+            - operation: train
+              select: model
       compare:
         - loss step as step
         - loss
         - accuracy
   resources:
-    model:
-      description: Exported model
-      sources:
-      - operation: train
-        select: model
     data:
       description: "Yann Lecun's MNIST dataset in compressed IDX format"
       private: yes
@@ -58,3 +66,4 @@
     train:
       flags:
         epochs: 5
+        lr: 1e-4

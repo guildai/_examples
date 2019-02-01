@@ -12,6 +12,7 @@ def init_flags():
     parser.add_argument("--rundir", default=".")
     parser.add_argument("--batch_size", type=int, default=100)
     parser.add_argument("--epochs", type=int, default=10)
+    parser.add_argument("--lr", type=float, default=0.5)
     parser.add_argument("--prepare", dest='just_data', action="store_true")
     parser.add_argument("--test", action="store_true")
     FLAGS, _ = parser.parse_known_args()
@@ -42,7 +43,7 @@ def init_train_op():
              -tf.reduce_sum(
                y_ * tf.log(y),
                reduction_indices=[1]))
-    train_op = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
+    train_op = tf.train.GradientDescentOptimizer(FLAGS.lr).minimize(loss)
 
 def init_eval_op():
     global accuracy
