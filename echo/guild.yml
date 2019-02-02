@@ -1,8 +1,13 @@
-- model: echo
-  operations:
-    say:
-      exec: echo ${message}
-      flags:
-        message:
-          arg-skip: yes
-          default: Hi there
+echo:
+  default: yes
+  exec: echo ${message}
+  flags:
+    message:
+      arg-skip: yes
+      default: Hi there
+
+_check:
+  steps:
+    - run: echo
+      expect:
+        output: Hi there
