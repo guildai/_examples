@@ -1,7 +1,7 @@
 # Simple 'echo' example
 
 This example demonstrates a very simple example that prints a message
-to stdout.
+to stdout. Refer to [`guild.yml`](guild.yml) for details.
 
 ``` yaml
 echo:
