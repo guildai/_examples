@@ -1,9 +1,0 @@
-- model: dogs-and-cats
-  extends:
-    - gpkg.slim/model-base
-  operations:
-    prepare-data:
-      main: prepare_data
-  resources:
-    prepared-data:
-      operation: prepare-data
