@@ -1,9 +1,7 @@
 echo:
-  default: yes
   exec: echo ${message}
   flags:
     message:
-      arg-skip: yes
       default: Hi there
 
 _check:
@@ -11,3 +9,6 @@ _check:
     - run: echo
       expect:
         output: Hi there
+    - run: echo message='Hola'
+      expect:
+        output: Hola
