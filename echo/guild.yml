@@ -9,6 +9,6 @@ _check:
     - run: echo
       expect:
         output: Hi there
-    - run: echo message='Hola'
+    - run: echo message=Hola
       expect:
         output: Hola
