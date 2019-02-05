@@ -47,7 +47,7 @@ def _init_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
         "-o", "--output-dir", default=".",
-        help="directory to save output (default is current directory)")
+        help="Directory to save output")
     return p.parse_args(argv[1:])
 
 def _init_output_dir(args):

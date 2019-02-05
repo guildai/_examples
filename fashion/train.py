@@ -49,7 +49,7 @@ class_names = [
 def main(argv):
     args = _init_args(argv)
     data = load_data(args.data_dir)
-    model = init_model(learning_rate=args.learning_rate)
+    model = init_model(learning_rate=args.lr)
     _init_output_dirs(args)
     _train_model(model, data, args)
     _test_model(model, data)
@@ -58,22 +58,22 @@ def _init_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
         "-e", "--epochs",
-        default=5, type=int,
-        help="number of epochs to train (default is 5)")
+        default=10, type=int,
+        help="Number of epochs to train")
     p.add_argument(
-        "-r", "--learning-rate", default=0.001, type=float,
-        help="learning rate (default is 0.001)")
+        "-r", "--lr", default=0.001, type=float,
+        help="Learning rate")
     p.add_argument(
         "-d", "--data-dir",
         help=(
-            "directory containing prepare data (default is to "
-            "download raw data)"))
+            "Directory containing prepare data; if not specified, "
+            "downloads raw data"))
     p.add_argument(
         "-c", "--checkpoint-dir", default=".",
-        help="directory to write checkpoints (default is current directory)")
+        help="Directory to write checkpoints")
     p.add_argument(
         "-l", "--log-dir", default=".",
-        help="directory to write logs (default is current directory)")
+        help="Directory to write logs")
     return p.parse_args(argv[1:])
 
 def load_data(from_dir=None):

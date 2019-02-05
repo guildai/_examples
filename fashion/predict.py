@@ -48,33 +48,31 @@ def _init_args(argv):
     p = argparse.ArgumentParser()
     p.add_argument(
         "-n", "--count", default=None, type=int,
-        help="number of randomly selected examples to predict (5)")
+        help="Number of randomly selected examples to predict")
     p.add_argument(
         "-r", "--range",
-        help=("range of examples to predict in the format START[:STOP] "
+        help=("Range of examples to predict in the format START[:STOP] "
               "where START is zero-based inclusive and STOP is "
               "zero-based exclusive; if STOP is omitted, only one example "
               "START is predicted"))
     p.add_argument(
         "-E", "--errors-only", action="store_true",
-        help="only show incorrect predictions")
+        help="Only show incorrect predictions")
     p.add_argument(
         "-d", "--data-dir",
         help=(
-            "directory containing prepare data (default is to "
-            "download raw data)"))
+            "Directory containing prepare data; if not specified, "
+            "downloads raw data"))
     p.add_argument(
         "-c", "--checkpoint-dir",
         default="model",
-        help=(
-            "directory containing model checkpoints (default is 'model' "
-            "subdirectory)"))
+        help="Directory containing model checkpoints")
     p.add_argument(
         "-e", "--checkpoint-epoch", type=int,
-        help="checkpoint epoch to use (latest available)")
+        help="Checkpoint epoch to use; default is latest available")
     p.add_argument(
         "-o", "--output-dir", default=".",
-        help="directory to save output (default is current directory)")
+        help="Directory to save output")
     return p.parse_args(argv[1:])
 
 def _load_model(args):

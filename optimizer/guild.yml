@@ -1,0 +1,5 @@
+train:
+  description: Training simulation to test optimization
+  main: train --logs .
+  flags:
+    $import: [x]

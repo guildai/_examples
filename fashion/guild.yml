@@ -1,82 +1,62 @@
 - model: fashion
-  description: Basic Fashion-MNIST image classifier.
+  description: Basic Fashion-MNIST image classifier
   references:
     - https://www.tensorflow.org/tutorials/keras/basic_classification
+
   operations:
     prepare-data:
       description: Prepare images for training.
       main: prepare_data --output-dir .
+      flags: {}
+
     train:
       description: Train classifier from scratch.
       main: train --data-dir data --log-dir . --checkpoint-dir .
+      flags: [epochs, lr]
       requires: prepared-data
-      label: epochs=${epochs} lr=${learning-rate}
-      flags:
-        epochs:
-          description: Number of epochs to train
-          default: 5
-        learning-rate:
-          description: Learning rate
-          default: 0.001
+      label: epochs=${epochs} lr=${lr}
+      compare:
+        - =lr
+        - epoch_loss step as step
+        - epoch_loss as loss
+        - epoch_acc as acc
+
     predict:
       description: Use trained model to make predictions.
       main: predict --data-dir data --checkpoint-dir model --output-dir .
+      flags: [count, range, errors-only, checkpoint-epoch]
       requires:
         - prepared-data
         - trained-model
       label: model=${trained-model}
-      flags:
-        count:
-          description: Number of images to predict
-          null-label: 5 if range unspecified
-        range:
-          description: Range of images to predict
-          null-label: unspecified
-        errors-only:
-          description: Only show incorrect predictions
-          default: no
-          arg-switch: yes
-        checkpoint-epoch:
-          description: Checkpoint epoch used for predictions
-          null-label: latest
+
+    _check:
+      steps:
+        - run: prepare-data
+          expect:
+            - file: sample-*.png
+            - file: test-images.npy
+            - file: test-labels.npy
+            - file: train-images.npy
+            - file: train-labels.npy
+        - run: train epochs=1
+          expect:
+            - file: events.out.tfevents.*
+            - file: weights-0001-*.hdf5
+        - run: predict
+          expect:
+            - file: '*.png'
+        - run: predict errors-only=yes
+          expect:
+            - file: '*-error.png'
   resources:
     prepared-data:
-      description: Preprocesed images using prepare-data.
       path: data
       sources:
         - operation: prepare-data
           select: .+\.npy
     trained-model:
-      description: Trained model using train.
       path: model
       sources:
         - operation: train
           select: weights-.+\.hdf5
-
-- test: fashion
-  steps:
-    - run: prepare-data
-      expect:
-        - file: sample-*.png
-        - file: test-images.npy
-        - file: test-labels.npy
-        - file: train-images.npy
-        - file: train-labels.npy
-    - run: train
-      flags:
-        epochs: 1
-      expect:
-        - file: events.out.tfevents.*
-        - file: weights-0001-*.hdf5
-    - run: predict
-      expect:
-        - file: '*.png'
-    - run: predict
-      flags:
-        errors-only: yes
-      expect:
-        - file: '*-error.png'
-
-- package: fashion
-  version: 1.0
-  description: Basic Fashion-MNIST image classifier
