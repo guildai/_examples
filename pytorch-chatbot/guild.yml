@@ -1,6 +1,5 @@
 train:
   main: chatbot_tutorial
-  default: yes
   python-requires: '>=3'
   flags:
     $dest: globals
