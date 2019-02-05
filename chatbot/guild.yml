@@ -1,1 +1,36 @@
-http://www.cs.cornell.edu/~cristian/data/cornell_movie_dialogs_corpus.zip
+train:
+  main: chatbot_tutorial
+  default: yes
+  python-requires: '>=3'
+  flags:
+    $dest: globals
+    clip: 50.0
+    teacher_forcing_ratio: 1.0
+    learning_rate: 0.0001
+    decoder_learning_ratio: 5.0
+    n_iteration: 4000
+    print_every: 10
+    save_every: 500
+  output-scalars:
+    step: 'Iteration: (\d+)'
+    loss: 'Average loss: (\d+\.\d+)'
+  compare:
+    - loss step as step
+    - loss
+    - =clip
+    - =decoder_learning_ratio
+    - =learning_rate
+    - =teacher_forcing_ratio
+  requires:
+    path: data
+    sources:
+      - url: http://www.cs.cornell.edu/~cristian/data/cornell_movie_dialogs_corpus.zip
+        sha256: 3bde8a571f615201bc2d2453e22878090719638592f774720eddec739de8c900
+        select: cornell movie-dialogs corpus
+
+_check:
+  steps:
+    - run: train n_iteration=10
+      expect:
+        - file: formatted_movie_lines.txt
+        - output: 'Iteration: 10; Percent complete: 100.0%; Average loss: .+'

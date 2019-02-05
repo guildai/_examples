@@ -1,0 +1,4 @@
+# guild: python>=3
+
+torch
+torchvision
