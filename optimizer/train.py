@@ -4,7 +4,7 @@ from tensorflow.python.keras.models import Sequential
 from tensorflow.python.keras.layers import InputLayer
 from tensorflow.python.keras.layers import Reshape, MaxPooling2D
 from tensorflow.python.keras.layers import Conv2D, Dense, Flatten
-from tensorflow.python.keras.callbacks import TensorBoard
+from tensorflow.python.keras.callbacks import EarlyStopping, TensorBoard
 from tensorflow.python.keras.optimizers import Adam
 
 # Hyperparameters
@@ -13,6 +13,7 @@ activation = 'relu'
 num_dense_layers = 1
 num_dense_nodes = 16
 learning_rate = 1e-5
+epochs = 3
 
 # Other params
 
@@ -64,21 +65,24 @@ model.compile(
 
 # Train
 
-tensorboard = TensorBoard(
-    log_dir='logs',
-    histogram_freq=0,
-    batch_size=32,
-    write_graph=True,
-    write_grads=False,
-    write_images=False)
+callbacks = [
+    EarlyStopping(
+        monitor='val_acc',
+        baseline=0.5,
+        patience=2),
+    TensorBoard(
+        log_dir='logs',
+        histogram_freq=0,
+        batch_size=32,
+        write_graph=True,
+        write_grads=False,
+        write_images=False)
+]
 
 history = model.fit(
     x=data.train.images,
     y=data.train.labels,
-    epochs=3,
+    epochs=epochs,
     batch_size=128,
     validation_data=validation_data,
-    callbacks=[tensorboard])
-
-accuracy = history.history['val_acc'][-1]
-print("Accuracy: {0:.4%}".format(accuracy))
+    callbacks=callbacks)

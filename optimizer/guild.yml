@@ -1,0 +1,41 @@
+train.py:
+  requires:
+    path: data
+    sources:
+      - url: http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+        unpack: no
+      - url: http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+        unpack: no
+      - url: http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+        unpack: no
+      - url: http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+        unpack: no
+  flags:
+    $dest: globals
+    epochs: 3
+    activation:
+      default: relu
+      choices: [relu, sigmoid]
+    num_dense_layers:
+      min: 1
+      max: 5
+      default: 1
+    num_dense_nodes:
+      min: 5
+      max: 512
+      default: 16
+    learning_rate:
+      min: 1e-6
+      max: 1e-2
+      default: 1e-5
+  objective:
+    maximize: epoch_val_acc
+  compare:
+    - =activation
+    - =learning_rate
+    - =num_dense_layers
+    - =num_dense_nodes
+    - =epochs
+    - epoch_loss step as step
+    - epoch_loss as loss
+    - epoch_val_acc as acc
