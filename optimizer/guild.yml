@@ -12,7 +12,10 @@ train.py:
         unpack: no
   flags:
     $dest: globals
-    epochs: 3
+    epochs:
+      min: 1
+      max: 10
+      default: 3
     activation:
       default: relu
       choices: [relu, sigmoid]

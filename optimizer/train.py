@@ -15,7 +15,7 @@ num_dense_nodes = 16
 learning_rate = 1e-5
 epochs = 3
 
-# Other params
+# Model params
 
 img_size = 28
 img_size_flat = img_size * img_size
