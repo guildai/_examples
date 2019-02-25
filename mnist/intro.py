@@ -72,7 +72,7 @@ def init_variable_summaries(var, name):
 
 def init_op_summaries():
     tf.summary.scalar("loss", loss)
-    tf.summary.scalar("accuracy", accuracy)
+    tf.summary.scalar("acc", accuracy)
 
 def init_summary_writers():
     global summaries, train_writer, validate_writer
@@ -88,7 +88,7 @@ def init_collections():
     tf.add_to_collection("outputs", json.dumps({"prediction": y.name}))
     tf.add_to_collection("x", x.name)
     tf.add_to_collection("y_", y_.name)
-    tf.add_to_collection("accuracy", accuracy.name)
+    tf.add_to_collection("acc", accuracy.name)
 
 def init_session():
     global sess
@@ -141,7 +141,7 @@ def init_exported_collections():
     saver.restore(sess, FLAGS.rundir + "/model/export")
     x = tensor_by_collection_name("x")
     y_ = tensor_by_collection_name("y_")
-    accuracy = tensor_by_collection_name("accuracy")
+    accuracy = tensor_by_collection_name("acc")
 
 def tensor_by_collection_name(name):
     tensor_name = tf.get_collection(name)[0].decode("UTF-8")
