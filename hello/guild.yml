@@ -1,4 +1,5 @@
 - model: hello
+  default: yes
   description: >
     A "hello world" sample model
 
@@ -68,3 +69,44 @@
       sources:
         - operation: from-file
           select: output
+
+- model: _check
+  operations:
+    default:
+      steps:
+        - run: hello:default
+          expect:
+            - output: Hello Guild!
+            - file: output
+              contains: Hello Guild!
+    from-flag:
+      steps:
+        - run: hello:from-flag
+          expect:
+            - output: Hello Guild, from a flag!
+            - file: output
+              contains: Hello Guild, from a flag!
+        - run: hello:from-flag message=whoop
+          expect:
+            - output: whoop
+            - file: output
+              contains: whoop
+    from-file:
+      steps:
+        - run: hello:from-file
+          expect:
+            - file: output
+              compare-to: msg.txt
+    from-file-output:
+      steps:
+        - run: hello:from-file
+        - run: hello:from-file-output
+          expect:
+            - file: from-file/output
+              compare-to: ${MODEL_DIR}/msg.txt
+    all:
+      steps:
+        - default
+        - from-flag
+        - from-file
+        - from-file-output

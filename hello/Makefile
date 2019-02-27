@@ -1,2 +1,2 @@
 check:
-	@echo TODO
+	guild run _check:all -y
