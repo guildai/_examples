@@ -1,33 +1,34 @@
-train.py:
-  requires:
-    path: data
-    default-unpack: no
-    sources:
-      - url: http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
-      - url: http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
-      - url: http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
-      - url: http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
+train:
+  description: Train MNIST classifier
+  main: train
   flags:
     $dest: globals
     epochs:
+      description: Number of epochs to train
+      default: 3
       min: 1
       max: 10
-      default: 3
     activation:
+      description: Activation function
       default: relu
-      choices: [relu, sigmoid]
+      choices:
+        - relu
+        - sigmoid
     num_dense_layers:
+      description: Number of dense layers
       min: 1
       max: 5
       default: 1
     num_dense_nodes:
+      description: Number of nodes per dense layer
+      default: 16
       min: 5
       max: 512
-      default: 16
     learning_rate:
+      description: Learning rate
+      default: 1e-5
       min: 1e-6
       max: 1e-2
-      default: 1e-5
   objective:
     maximize: epoch_val_acc
   compare:
@@ -39,3 +40,11 @@ train.py:
     - epoch_loss step as step
     - epoch_loss as loss
     - epoch_val_acc as acc
+  requires:
+    path: data
+    default-unpack: no
+    sources:
+      - url: http://yann.lecun.com/exdb/mnist/train-images-idx3-ubyte.gz
+      - url: http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
+      - url: http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
+      - url: http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz

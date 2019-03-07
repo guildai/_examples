@@ -1,11 +1,11 @@
 import tensorflow as tf
 
-from tensorflow.python.keras.models import Sequential
-from tensorflow.python.keras.layers import InputLayer
-from tensorflow.python.keras.layers import Reshape, MaxPooling2D
-from tensorflow.python.keras.layers import Conv2D, Dense, Flatten
-from tensorflow.python.keras.callbacks import EarlyStopping, TensorBoard
-from tensorflow.python.keras.optimizers import Adam
+from tensorflow.python.keras import callbacks
+from tensorflow.python.keras import layers
+from tensorflow.python.keras import models
+from tensorflow.python.keras import optimizers
+
+import util
 
 # Hyperparameters
 
@@ -21,12 +21,11 @@ img_size = 28
 img_size_flat = img_size * img_size
 img_shape = (img_size, img_size)
 img_shape_full = (img_size, img_size, 1)
-num_channels = 1
 num_classes = 10
 
 # Data
 
-tf.logging.set_verbosity(tf.logging.ERROR)
+tf.logging.set_verbosity(tf.logging.WARN)
 from tensorflow.examples.tutorials.mnist import input_data
 data = input_data.read_data_sets('data', one_hot=True)
 tf.logging.set_verbosity(tf.logging.INFO)
@@ -34,52 +33,59 @@ validation_data = data.validation.images, data.validation.labels
 
 # Model
 
-model = Sequential()
-model.add(InputLayer(input_shape=(img_size_flat,)))
-model.add(Reshape(img_shape_full))
-model.add(
-    Conv2D(
-        kernel_size=5, strides=1, filters=16, padding='same',
-        activation=activation, name='layer_conv1'))
-model.add(
-    MaxPooling2D(pool_size=2, strides=2))
-model.add(
-    Conv2D(
-        kernel_size=5, strides=1, filters=36, padding='same',
-        activation=activation, name='layer_conv2'))
-model.add(MaxPooling2D(pool_size=2, strides=2))
-model.add(Flatten())
+model = models.Sequential()
+model.add(layers.InputLayer(input_shape=(img_size_flat,)))
+model.add(layers.Reshape(img_shape_full))
+model.add(layers.Conv2D(
+    kernel_size=5,
+    strides=1,
+    filters=16,
+    padding='same',
+    activation=activation,
+    name='layer_conv1'))
+model.add(layers.MaxPooling2D(pool_size=2, strides=2))
+model.add(layers.Conv2D(
+    kernel_size=5,
+    strides=1,
+    filters=36,
+    padding='same',
+    activation=activation,
+    name='layer_conv2'))
+model.add(layers.MaxPooling2D(pool_size=2, strides=2))
+model.add(layers.Flatten())
 for i in range(num_dense_layers):
     name = 'layer_dense_{0}'.format(i+1)
-    model.add(
-        Dense(
-            num_dense_nodes,
-            activation=activation,
-            name=name))
-model.add(Dense(num_classes, activation='softmax'))
-optimizer = Adam(lr=learning_rate)
+    model.add(layers.Dense(
+        num_dense_nodes,
+        activation=activation,
+        name=name))
+model.add(layers.Dense(num_classes, activation='softmax'))
+
 model.compile(
-    optimizer=optimizer,
+    optimizer=optimizers.Adam(lr=learning_rate),
     loss='categorical_crossentropy',
     metrics=['accuracy'])
+
+util.save_model_summary(model)
 
 # Train
 
 callbacks = [
-    EarlyStopping(
+    callbacks.EarlyStopping(
         monitor='val_acc',
-        baseline=0.5,
         patience=2),
-    TensorBoard(
+    callbacks.TensorBoard(
         log_dir='logs',
         histogram_freq=0,
         batch_size=32,
         write_graph=True,
         write_grads=False,
-        write_images=False)
+        write_images=False),
+    callbacks.ModelCheckpoint(
+        filepath='weights.{epoch:02d}-{val_loss:.2f}.hdf5'),
 ]
 
-history = model.fit(
+model.fit(
     x=data.train.images,
     y=data.train.labels,
     epochs=epochs,
