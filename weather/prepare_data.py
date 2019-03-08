@@ -133,7 +133,7 @@ def write_pairplots_fig(data, args):
     to_plot = data[['temp_1', 'average', 'actual']].copy()
     to_plot['season'] = seasons
 
-    sns.set(style="ticks", color_codes=True)
+    sns.set(style='ticks', color_codes=True)
     palette = sns.xkcd_palette(['dark blue', 'dark green', 'gold', 'orange'])
     sns_plt = sns.pairplot(
         to_plot,
@@ -142,7 +142,7 @@ def write_pairplots_fig(data, args):
         palette=palette,
         plot_kws={'alpha': 0.7},
         diag_kws={'shade': True})
-    sns_plt.savefig(os.path.join(args.output, "pairplots.png"))
+    sns_plt.savefig(os.path.join(args.output, 'pairplots.png'))
 
 def write_split_data(data, args):
     print("Writing train and validate data")
@@ -150,12 +150,12 @@ def write_split_data(data, args):
      val_features,
      train_labels,
      val_labels), feature_names = split_data(data, args)
-    np.save(os.path.join(args.output, "train-features.npy"), train_features)
-    np.save(os.path.join(args.output, "val-features.npy"), val_features)
-    np.save(os.path.join(args.output, "train-labels.npy"), train_labels)
-    np.save(os.path.join(args.output, "val-labels.npy"), val_labels)
-    with open(os.path.join(args.output, "feature-names.txt"), "w") as out:
-        out.write("\n".join(feature_names))
+    np.save(os.path.join(args.output, 'train-features.npy'), train_features)
+    np.save(os.path.join(args.output, 'val-features.npy'), val_features)
+    np.save(os.path.join(args.output, 'train-labels.npy'), train_labels)
+    np.save(os.path.join(args.output, 'val-labels.npy'), val_labels)
+    with open(os.path.join(args.output, 'feature-names.txt'), 'w') as out:
+        out.write('\n'.join(feature_names))
 
 def split_data(data, args):
     onehot_data = pd.get_dummies(data)
@@ -168,5 +168,5 @@ def split_data(data, args):
          random_state=args.random_seed)
     return split, list(features.columns)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

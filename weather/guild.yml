@@ -2,14 +2,56 @@ prepare-data:
   description: Prepare data set for training
   main: prepare_data --output .
   flags:
-    $import: [source, val-split, random-seed]
+    $import:
+      - source
+      - val-split
+      - random-seed
   compare: []
 
 train:
   description: Train a model
   main: train --output .
   flags:
-    $import: [estimators, random-seed]
+    estimators:
+      default: 30
+      min: 1
+      max: 200
+    criterion:
+      default: mse
+      choices:
+        - mse
+        - mae
+    max_depth:
+      default: null
+      min: 1
+      max: 10
+    min_samples_split:
+      default: 2
+      min: 2
+      max: 10
+    min_samples_leaf:
+      default: 1
+      min: 1
+      max: 10
+    min_weight_fraction_leaf:
+      default: 0.0
+      min: 0.0
+      max: 0.5
+    max_features:
+      default: auto
+      choices:
+        - auto
+        - sqrt
+        - log2
+    max_leaf_nodes:
+      default: null
+      min: 2
+      max: 10
+    min_impurity_decrease:
+      default: 0.0
+      min: 0.0
+      max: 1.0
+    random_seed: 13
   requires:
     - sources:
         - operation: prepare-data
@@ -19,6 +61,14 @@ train:
     acc: 'Accuracy: (.+)'
   compare:
     - =estimators
+    - =criterion
+    - =max_depth
+    - =min_samples_split
+    - =min_samples_leaf
+    - =min_weight_fraction_leaf
+    - =max_features
+    - =max_leaf_nodes
+    - =min_impurity_decrease
     - acc
   objective:
     maximize: acc

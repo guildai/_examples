@@ -20,17 +20,29 @@ def main():
 def init_args():
     p = argparse.ArgumentParser()
     p.add_argument(
-        "--estimators",
+        '--estimators',
         default=1000,
         type=int,
         help="Number of trees in the forest")
     p.add_argument(
-        '--random-seed',
+        '--criterion',
+        default='mse',
+        choices=('mse', 'mae'),
+        help="Function to measure the quality of a split")
+    p.add_argument("--max_depth", type=int)
+    p.add_argument("--min_samples_split", default=2, type=int)
+    p.add_argument("--min_samples_leaf", default=1, type=int)
+    p.add_argument("--min_weight_fraction_leaf", default=0.0, type=float)
+    p.add_argument("--max_features", default="auto")
+    p.add_argument("--max_leaf_nodes", type=int)
+    p.add_argument("--min_impurity_decrease", default=0.0, type=float)
+    p.add_argument(
+        '--random_seed',
         type=int,
         help="Random seed used for model init")
     p.add_argument(
-        "--data-dir",
-        default="data",
+        '--data_dir',
+        default='data',
         help="Path to prepared data")
     p.add_argument(
         '--output',
@@ -40,10 +52,10 @@ def init_args():
 
 def load_data(args):
     print("Loading data")
-    train_features = np.load(os.path.join(args.data_dir, "train-features.npy"))
-    val_features = np.load(os.path.join(args.data_dir, "val-features.npy"))
-    train_labels = np.load(os.path.join(args.data_dir, "train-labels.npy"))
-    val_labels = np.load(os.path.join(args.data_dir, "val-labels.npy"))
+    train_features = np.load(os.path.join(args.data_dir, 'train-features.npy'))
+    val_features = np.load(os.path.join(args.data_dir, 'val-features.npy'))
+    train_labels = np.load(os.path.join(args.data_dir, 'train-labels.npy'))
+    val_labels = np.load(os.path.join(args.data_dir, 'val-labels.npy'))
     return (
         train_features,
         val_features,
@@ -56,6 +68,14 @@ def init_model(args):
     from sklearn.ensemble import RandomForestRegressor
     return RandomForestRegressor(
         n_estimators=args.estimators,
+        criterion=args.criterion,
+        max_depth=args.max_depth,
+        min_samples_split=args.min_samples_split,
+        min_samples_leaf=args.min_samples_leaf,
+        min_weight_fraction_leaf=args.min_weight_fraction_leaf,
+        max_features=args.max_features,
+        max_leaf_nodes=args.max_leaf_nodes,
+        min_impurity_decrease=args.min_impurity_decrease,
         random_state=args.random_seed)
 
 def train(model, data):
@@ -70,7 +90,7 @@ def ensure_output_dir(args):
 
 def write_model(model, args):
     print("Saving model")
-    with open(os.path.join(args.output, "model.pickle"), "wb") as out:
+    with open(os.path.join(args.output, 'model.pickle'), 'wb') as out:
         out.write(pickle.dumps(model))
 
 def evaluate_model(model, data):
@@ -82,5 +102,5 @@ def evaluate_model(model, data):
     accuracy = 1.0 - np.mean(errors / val_labels)
     print("  Accuracy: %f" % accuracy)
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()

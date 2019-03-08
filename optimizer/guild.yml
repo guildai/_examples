@@ -16,9 +16,9 @@ train:
         - sigmoid
     num_dense_layers:
       description: Number of dense layers
+      default: 1
       min: 1
       max: 5
-      default: 1
     num_dense_nodes:
       description: Number of nodes per dense layer
       default: 16
