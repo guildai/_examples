@@ -1,0 +1,17 @@
+prepare-data:
+  description: Prepare data set for training
+  main: prepare_data --output .
+  flags:
+    $import: [source, val-split, random-seed]
+
+train:
+  description: Train a model
+  main: train
+  requires:
+    - operation: prepare-data
+
+predict:
+  description: Use a trained model to make a prediction
+  main: predict
+  requires:
+    - operation: train
