@@ -3,12 +3,25 @@ prepare-data:
   main: prepare_data --output .
   flags:
     $import: [source, val-split, random-seed]
+  compare: []
 
 train:
   description: Train a model
-  main: train
+  main: train --output .
+  flags:
+    $import: [estimators, random-seed]
   requires:
-    - operation: prepare-data
+    - sources:
+        - operation: prepare-data
+          select: .+\.npy
+      path: data
+  output-scalars:
+    acc: 'Accuracy: (.+)'
+  compare:
+    - =estimators
+    - acc
+  objective:
+    maximize: acc
 
 predict:
   description: Use a trained model to make a prediction
