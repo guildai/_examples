@@ -15,7 +15,7 @@ def main():
     train(model, data)
     ensure_output_dir(args)
     write_model(model, args)
-    evaluate_model(model, data)
+    eval_model(model, data)
 
 def init_args():
     p = argparse.ArgumentParser()
@@ -93,14 +93,18 @@ def write_model(model, args):
     with open(os.path.join(args.output, 'model.pickle'), 'wb') as out:
         out.write(pickle.dumps(model))
 
-def evaluate_model(model, data):
+def eval_model(model, data):
     print("Evaluating model")
-    _train_f, val_features, _train_l, val_labels = data
-    predictions = model.predict(val_features)
-    errors = abs(predictions - val_labels)
-    print("  Average absolute error: %f degrees" % np.mean(errors))
-    accuracy = 1.0 - np.mean(errors / val_labels)
-    print("  Accuracy: %f" % accuracy)
+    train_features, val_features, train_labels, val_labels = data
+    eval_predictions(model, train_features, train_labels, "train")
+    eval_predictions(model, val_features, val_labels, "validate")
+
+def eval_predictions(model, features, labels, desc):
+    predictions = model.predict(features)
+    errors = abs(predictions - labels)
+    print("  Average absolute error (%s): %f degrees" % (desc, np.mean(errors)))
+    accuracy = 1.0 - np.mean(errors / labels)
+    print("  Accuracy (%s): %f" % (desc, accuracy))
 
 if __name__ == '__main__':
     main()

@@ -2,10 +2,13 @@ prepare-data:
   description: Prepare data set for training
   main: prepare_data --output .
   flags:
-    $import:
-      - source
-      - val-split
-      - random-seed
+    random-seed:
+      null-label: randomly generated
+    source:
+      default: seattle-2016.csv
+      type: existing-path
+    val-split:
+      default: 0.25
   compare: []
 
 train:
@@ -58,7 +61,8 @@ train:
           select: .+\.npy
       path: data
   output-scalars:
-    acc: 'Accuracy: (.+)'
+    acc: 'Accuracy \(train\): (.+)'
+    val_acc: 'Accuracy \(validate\): (.+)'
   compare:
     - =estimators
     - =criterion
@@ -70,8 +74,9 @@ train:
     - =max_leaf_nodes
     - =min_impurity_decrease
     - acc
+    - val_acc
   objective:
-    maximize: acc
+    maximize: val_acc
 
 predict:
   description: Use a trained model to make a prediction
