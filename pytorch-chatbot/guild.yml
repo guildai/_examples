@@ -1,6 +1,7 @@
 train:
+  description: Train sample PyTorch chatbot
   main: chatbot_tutorial
-  python-requires: '>=3'
+  python-requires: '>=3.6'
   flags:
     $dest: globals
     clip: 50.0
