@@ -1,4 +1,4 @@
-train:
+train.py:
   description: Train MNIST classifier
   main: train
   flags:
