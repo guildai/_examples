@@ -1,17 +1,12 @@
 # Guild AI examples
 
-This repository contains a limited number of Guild AI examples. It's
-used primary for automated testing.
+This repository contains various projects that illustrate using Guild
+AI. Refer to each example for more information.
 
-For a more comprehensive list of sample projects, see
-[https://github.com/guildai/packages](https://github.com/guildai/packages).
+## About Guild AI
 
-Additional links:
+Guild AI is an open source tool for running, tracking, and comparing
+machine learning experiments. It supports all ML platforms including
+TensorFlow, PyTorch, Keras, MXNet, scikit-learn, and XGBoost.
 
-- **[Guild AI website](https://www.guild.ai)**
-- **[Guild AI Documentation](https://www.guild.ai/docs/)**
-
-If you have questions about Guild AI or are facing problems with model
-development, please open an issue on the main Guild AI issue tracker
-at
-[https://github.com/guildai/guild/issues](https://github.com/guildai/guild/issues).
+For more information, visit https://guild.ai.
