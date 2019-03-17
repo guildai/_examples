@@ -1,4 +1,4 @@
-'''Trains a simple deep NN on the MNIST dataset.
+'''Trains a simple deep NN on the FASHION_MNIST dataset.
 
 Gets to 98.40% test accuracy after 20 epochs
 (there is *a lot* of margin for parameter tuning).
@@ -9,18 +9,21 @@ from __future__ import print_function
 
 from tensorflow import keras
 
-from keras.datasets import mnist
+from keras.datasets import fashion_mnist
 from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
 
 batch_size = 128
 epochs = 5
+lr = 0.001
+lr_decay = 0.0
+rho = 0.0
 
 _num_classes = 10
 
 # the data, split between train and test sets
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
+(x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 
 x_train = x_train.reshape(60000, 784)
 x_test = x_test.reshape(10000, 784)
@@ -45,7 +48,7 @@ model.add(Dense(_num_classes, activation='softmax'))
 model.summary()
 
 model.compile(loss='categorical_crossentropy',
-              optimizer=RMSprop(),
+              optimizer=RMSprop(lr=lr, rho=rho, decay=lr_decay),
               metrics=['accuracy'])
 
 history = model.fit(x_train, y_train,
