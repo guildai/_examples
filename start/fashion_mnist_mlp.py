@@ -51,12 +51,14 @@ model.compile(loss='categorical_crossentropy',
               optimizer=RMSprop(lr=lr, rho=rho, decay=lr_decay),
               metrics=['accuracy'])
 
+tensorboard = keras.callbacks.TensorBoard(".", write_images=True)
+
 history = model.fit(x_train, y_train,
                     batch_size=batch_size,
                     epochs=epochs,
                     verbose=1,
                     validation_data=(x_test, y_test),
-                    callbacks=[keras.callbacks.TensorBoard()])
+                    callbacks=[tensorboard])
 score = model.evaluate(x_test, y_test, verbose=0)
 print('Test loss:', score[0])
 print('Test accuracy:', score[1])
