@@ -1,0 +1,22 @@
+- model: fashion-mnist
+  description: Simple classifier for Fashion-MNIST
+  operations:
+    train:
+      description: Train classifier
+      main: fashion_mnist_mlp
+      flags:
+        $dest: globals
+        batch_size:
+          default: 128
+        epochs:
+          default: 5
+        dropout:
+          default: 0.2
+        lr:
+          default: 0.001
+        lr_decay:
+          default: 0.0
+        rho:
+          default: 0.0
+        val_split:
+          default: 0.2
