@@ -10,7 +10,6 @@ epochs = 5
 dropout = 0.2
 lr = 0.001
 lr_decay = 0.0
-rho = 0.9
 
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 x_train = x_train.reshape(60000, 784)
@@ -31,7 +30,7 @@ model.add(Dense(10, activation='softmax'))
 
 model.compile(
     loss='categorical_crossentropy',
-    optimizer=RMSprop(lr=lr, rho=rho, decay=lr_decay),
+    optimizer=RMSprop(lr=lr, decay=lr_decay),
     metrics=['accuracy'])
 
 model.fit(

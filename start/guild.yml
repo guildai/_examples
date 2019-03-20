@@ -5,33 +5,23 @@
       description: Train classifier
       main: fashion_mnist_mlp
       flags:
+        $import: all
         $dest: globals
         batch_size:
           description: Training batch size
-          default: 128
         epochs:
           description: Epochs to train
-          default: 5
         dropout:
           description: Dropout rate
-          default: 0.2
           min: 0.0
-          max: 1.0
+          max: 0.5
         lr:
           description: Learning rate
-          default: 0.001
+          distribution: loguniform
           min: 1e-5
           max: 1e-1
-          distribution: loguniform
         lr_decay:
           description: Learning rate decay
-          default: 0.0
-          min: 0.0
-          max: 1.0
-        rho:
-          default: 0.9
-          min: 0.0
-          max: 1.0
       objective:
         maximize: epoch_val_acc
       compare:
