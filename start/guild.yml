@@ -7,16 +7,41 @@
       flags:
         $dest: globals
         batch_size:
+          description: Training batch size
           default: 128
         epochs:
+          description: Epochs to train
           default: 5
         dropout:
+          description: Dropout rate
           default: 0.2
+          min: 0.0
+          max: 1.0
         lr:
+          description: Learning rate
           default: 0.001
+          min: 1e-5
+          max: 1e-1
+          distribution: loguniform
         lr_decay:
+          description: Learning rate decay
           default: 0.0
+          min: 0.0
+          max: 1.0
         rho:
-          default: 0.0
-        val_split:
-          default: 0.2
+          default: 0.9
+          min: 0.0
+          max: 1.0
+      objective:
+        maximize: epoch_val_acc
+      compare:
+        - =epochs
+        - =dropout
+        - =lr
+        - =lr_decay
+        - =rho
+        - epoch_loss step as step
+        - epoch_loss as loss
+        - epoch_acc as acc
+        - epoch_val_loss as val_loss
+        - epoch_val_acc as val_acc

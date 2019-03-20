@@ -10,8 +10,7 @@ epochs = 5
 dropout = 0.2
 lr = 0.001
 lr_decay = 0.0
-rho = 0.0
-val_split = 0.2
+rho = 0.9
 
 (x_train, y_train), (x_test, y_test) = fashion_mnist.load_data()
 x_train = x_train.reshape(60000, 784)
@@ -40,9 +39,5 @@ model.fit(
     batch_size=batch_size,
     epochs=epochs,
     verbose=1,
-    validation_split=0.2,
+    validation_data=(x_test, y_test),
     callbacks=[keras.callbacks.TensorBoard()])
-
-score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss: %f' % score[0])
-print('Test accuracy: %f' % score[1])
