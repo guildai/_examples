@@ -19,9 +19,8 @@
       description:
         An experiment that explores the impact of dropout
 
-        We find that dropout above 0.9 starts to negatively impacts
-        learning. Dropout rates above 0.95 appear to be pathological,
-        at least for short training runs.
+        We find that dropout above 0.9 starts to negatively impact
+        learning. Dropout rates above 0.95 appear to be pathological.
 
         Use `guild compare 1:5 --table -cc =dropout,val_acc` to
         compare results after running experiment.
