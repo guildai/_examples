@@ -1,0 +1,42 @@
+# This is a variation of guild.yml that uses scalars logged by the
+# Keras TensorBoard callback instead of the default scalars used by
+# Guild, which are taken from the script output as it runs.
+#
+# In particular, the changes consist of:
+#
+# - Disable `output scalars` (the map of scalar keys to regular
+#   expressions that is used capture scalar values from script output
+#   by providing an empty map.
+#
+# - Redefine the `compare` (the list of column specs shown for to use
+#   scalars logged by the Keras TensorBoard callback (the list of
+#   available scalars for a run can be shown by running the `compare`
+#   command with `--print-scalars` command line option.
+#
+# - Redefine the `objective` (the column spec used for either
+#   maximizing or minizing during optimization) to use the valication
+#   accuracy scalar.
+#
+# The net result of this change is to disable default scalar logging
+# and rely solely on scalar logged by the script.
+
+- model: fashion
+  description: Simple classifier for Fashion-MNIST
+  operations:
+    train:
+      description: Train classifier
+      main: fashion_mnist_mlp
+      output-scalars: {}
+      compare:
+        - =batch_size
+        - =dropout
+        - =epochs
+        - =lr
+        - =lr_decay
+        - epoch_loss step as step
+        - epoch_loss as loss
+        - epoch_acc as acc
+        - epoch_val_loss as val_loss
+        - epoch_val_acc as val_acc
+      objective:
+        maximize: epoch_val_acc

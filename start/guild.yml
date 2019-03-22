@@ -1,37 +1,29 @@
-- model: fashion-mnist
+- model: fashion
   description: Simple classifier for Fashion-MNIST
   operations:
     train:
+      default: yes
       description: Train classifier
       main: fashion_mnist_mlp
       flags:
-        $import: all
-        $dest: globals
         batch_size:
           description: Training batch size
         epochs:
-          description: Epochs to train
-        dropout:
-          description: Dropout rate
-          min: 0.0
-          max: 0.5
+          description: Number of epochs to train
         lr:
-          description: Learning rate
-          distribution: loguniform
-          min: 1e-5
-          max: 1e-1
-        lr_decay:
-          description: Learning rate decay
-      objective:
-        maximize: epoch_val_acc
-      compare:
-        - =epochs
-        - =dropout
-        - =lr
-        - =lr_decay
-        - =rho
-        - epoch_loss step as step
-        - epoch_loss as loss
-        - epoch_acc as acc
-        - epoch_val_loss as val_loss
-        - epoch_val_acc as val_acc
+          description: Learning rate used to train
+          max: 1e-2
+        dropout:
+          description: Dropout rate used to help prevent overfitting
+    dropout-experiment:
+      description:
+        An experiment that explores the impact of dropout
+
+        We find that dropout above 0.9 starts to negatively impacts
+        learning. Dropout rates above 0.95 appear to be pathological,
+        at least for short training runs.
+
+        Use `guild compare 1:5 --table -cc =dropout,val_acc` to
+        compare results after running experiment.
+      steps:
+        - run: train dropout=[0.7,0.8,0.9,0.95,0.99] epochs=1
