@@ -13,6 +13,7 @@
         - validate#accuracy as accuracy
       objective:
         maximize: validate#accuracy
+      flags-import: no
       flags:
         batch-size:
           description: Number of images to include in a training batch
@@ -27,6 +28,7 @@
     evaluate:
       description: Evaluate a trained model using test data
       main: '{{main}} --test --datadir data --rundir .'
+      flags-import: no
       requires:
         - data
         - sources:
