@@ -21,7 +21,7 @@
         alternative message.
 
       main: say
-      flags: {}
+      flags-import: no
 
     from-flag:
       description: >
@@ -30,6 +30,7 @@
         Use the 'message' flag to specify the message to print.
 
       main: say
+      flags-import: no
       flags:
         message:
           description: Message to print
@@ -43,6 +44,7 @@
 
       main: say
       requires: msg-file
+      flags-import: no
       flags:
         file:
           description: File containing the message to print
@@ -55,7 +57,7 @@
         This operation requires a completed file-output run.
 
       main: say --file-output
-      flags: {}
+      flags-import: no
       requires: file-output
 
   resources:
