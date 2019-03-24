@@ -1,7 +1,7 @@
 train:
   description: Train on MNIST
   default: yes
-  main: train
+  # Note we've omitted `main` here - defaults to name of op
   requires:
     path: data
     default-unpack: no
@@ -10,10 +10,9 @@ train:
       - url: http://yann.lecun.com/exdb/mnist/train-labels-idx1-ubyte.gz
       - url: http://yann.lecun.com/exdb/mnist/t10k-images-idx3-ubyte.gz
       - url: http://yann.lecun.com/exdb/mnist/t10k-labels-idx1-ubyte.gz
-  flags:
-    $import:
-      - batch_size
-      - epochs
+  flags-import:
+    - batch_size
+    - epochs
   compare:
     - loss step as step
     - loss as train_loss
@@ -28,7 +27,7 @@ evaluate:
       select:
         - model
         - data
-  flags: {}
+  flags-import: no
   compare:
     - loss as val_loss
     - acc as val_acc
