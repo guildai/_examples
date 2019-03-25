@@ -1,9 +1,9 @@
-from tensorflow import keras
-
-from keras.datasets import fashion_mnist
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
-from keras.optimizers import RMSprop
+from tensorflow.keras.callbacks import TensorBoard
+from tensorflow.keras.datasets import fashion_mnist
+from tensorflow.keras.layers import Dense, Dropout
+from tensorflow.keras.models import Sequential
+from tensorflow.keras.optimizers import RMSprop
+from tensorflow.keras.utils import to_categorical
 
 batch_size = 128
 epochs = 5
@@ -18,8 +18,8 @@ x_train = x_train.astype('float32')
 x_test = x_test.astype('float32')
 x_train /= 255
 x_test /= 255
-y_train = keras.utils.to_categorical(y_train, 10)
-y_test = keras.utils.to_categorical(y_test, 10)
+y_train = to_categorical(y_train, 10)
+y_test = to_categorical(y_test, 10)
 
 model = Sequential()
 model.add(Dense(512, activation='relu', input_shape=(784,)))
@@ -39,4 +39,4 @@ model.fit(
     epochs=epochs,
     verbose=1,
     validation_data=(x_test, y_test),
-    callbacks=[keras.callbacks.TensorBoard(".")])
+    callbacks=[TensorBoard(".")])
