@@ -1,0 +1,31 @@
+# Step 1. Operation named for your script
+#
+# You can alternatively name this `train` (drop the `.py` extension).
+# In this case, you'd run `guild run train`.
+
+train.py:
+
+  # Step 2. List all of the scalars you want to capture
+  #
+  # This is a map of scalar key to regular expression.
+
+  output-scalars:
+    step: 'step: (\S+)'
+    loss: 'loss: (\S+)'
+    accuracy: 'accuracy: (\S+)'
+
+  # Step 3. List the columns that you want to compare
+  #
+  # Note that flag names must be prefixed with '=' to
+  # differentiate them from scalar keys.
+  #
+  # This is a painful step and unfortunately required in 0.6.1.
+  # This will be fixed in 0.6.2 with a much less cumbersome
+  # approach.
+
+  compare:
+    - =a
+    - =b
+    - loss step as step
+    - loss
+    - accuracy
