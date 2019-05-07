@@ -1,0 +1,3 @@
+train.py:
+  requires:
+    - file: my_script
