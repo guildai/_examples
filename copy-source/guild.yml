@@ -1,0 +1,36 @@
+default:
+  main: guild.pass
+
+all:
+  main: guild.pass
+  source: '*'
+
+none:
+  main: guild.pass
+  source:
+    - exclude: '*'
+
+just-py:
+  main: guild.pass
+  source: '*.py'
+
+a-b:
+  main: guild.pass
+  source:
+    - a.py
+    - b.py
+
+fancy:
+  main: guild.pass
+  source:
+    - exclude: '*.py'
+    - include: logo.png
+
+_check:
+  steps:
+    - run: default
+    - run: all
+    - run: none
+    - run: just-py
+    - run: a-b
+    - run: fancy
