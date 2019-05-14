@@ -3,7 +3,7 @@
 # You can alternatively name this `train` (drop the `.py` extension).
 # In this case, you'd run `guild run train`.
 
-train.py:
+train:
 
   # Step 2. List all of the scalars you want to capture
   #
