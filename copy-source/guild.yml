@@ -3,26 +3,26 @@ default:
 
 all:
   main: guild.pass
-  source: '*'
+  snapshot-source: '*'
 
 none:
   main: guild.pass
-  source:
+  snapshot-source:
     - exclude: '*'
 
 just-py:
   main: guild.pass
-  source: '*.py'
+  snapshot-source: '*.py'
 
 a-b:
   main: guild.pass
-  source:
+  snapshot-source:
     - a.py
     - b.py
 
 fancy:
   main: guild.pass
-  source:
+  snapshot-source:
     - exclude: '*.py'
     - include: logo.png
 
