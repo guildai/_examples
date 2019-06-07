@@ -16,3 +16,7 @@ View the results using Guild compare:
     guild compare
 
 Press `q` to exit compare.
+
+You can also view the results in TensorBoard:
+
+    guild tensorboard
