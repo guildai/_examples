@@ -11,6 +11,12 @@ Press `Enter` to train.
 
 Of course it's a sample training operation - nothing is trained!
 
+View the run info, including scalars and flags by running:
+
+    guild runs info --scalars
+
+This shows the info for the latest run by default.
+
 View the results using Guild compare:
 
     guild compare
