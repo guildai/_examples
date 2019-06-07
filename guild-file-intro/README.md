@@ -1,7 +1,7 @@
 # Guild Intro Example
 
-This example shows a very simple Guild file that imports two flags
-from a training script.
+This example shows a [simple Guild file](guild.yml) that imports two
+flags from a [mock training script](train.py).
 
 To run the operation, change to this directory and run:
 
