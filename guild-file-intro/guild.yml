@@ -1,0 +1,4 @@
+train:
+  flags-import:
+    -f1
+    -f2
