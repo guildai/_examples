@@ -1,7 +1,5 @@
 import argparse
-import os
 import sys
-import time
 
 p = argparse.ArgumentParser()
 p.add_argument("--rundir")
@@ -30,10 +28,3 @@ elif args.message:
     say(args.message)
 else:
     say("Hello Guild!")
-
-try:
-    sleep = int(os.environ["SLEEP"])
-except (KeyError, ValueError):
-    pass
-else:
-    time.sleep(sleep)
