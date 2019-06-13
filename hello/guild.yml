@@ -11,6 +11,11 @@
     output and written to a file named `output` in the run directory.
 
   operations:
+    _default_delay:
+      main: say
+      env:
+        SLEEP: 5
+
     default:
       default: yes
       description: >
