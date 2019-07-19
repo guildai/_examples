@@ -13,12 +13,11 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.optimizers import RMSprop
 
-
 batch_size = 128
 num_classes = 10
 epochs = 20
 
-# the data, shuffled and split between train and test sets
+# the data, split between train and test sets
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 
 x_train = x_train.reshape(60000, 784)
@@ -39,7 +38,7 @@ model.add(Dense(512, activation='relu', input_shape=(784,)))
 model.add(Dropout(0.2))
 model.add(Dense(512, activation='relu'))
 model.add(Dropout(0.2))
-model.add(Dense(10, activation='softmax'))
+model.add(Dense(num_classes, activation='softmax'))
 
 model.summary()
 
@@ -52,7 +51,8 @@ history = model.fit(x_train, y_train,
                     epochs=epochs,
                     verbose=1,
                     validation_data=(x_test, y_test),
-                    callbacks=[keras.callbacks.TensorBoard()])
+                    callbacks=[keras.callbacks.TensorBoard(".")])
+
 score = model.evaluate(x_test, y_test, verbose=0)
-print('Test loss:', score[0])
-print('Test accuracy:', score[1])
+print('test_loss:', score[0])
+print('test_acc:', score[1])

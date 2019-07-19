@@ -1,0 +1,15 @@
+- model: mlp-mnist
+  description: Multilayer Perceptron (MLP) for MNIST
+  disable-plugins: all
+  operations:
+    train:
+      description: Train MLP on MNIST
+      main: mnist_mlp
+      flags-no-import: num_classes
+      output-scalars: '^(\key): (\value)'
+      flags:
+        epochs:
+          description: Number of epochs to train
+          default: 5
+        batch_size:
+          description: Size of each training batch
