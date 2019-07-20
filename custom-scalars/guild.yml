@@ -10,9 +10,9 @@ train:
   # This is a map of scalar key to regular expression.
 
   output-scalars:
-    step: 'step: (\S+)'
-    loss: 'loss: (\S+)'
-    accuracy: 'accuracy: (\S+)'
+    step: 'step: (\value)'
+    loss: 'loss: (\value)'
+    accuracy: 'accuracy: (\value)'
 
   # Step 3. List the columns that you want to compare
   #
@@ -29,3 +29,7 @@ train:
     - loss step as step
     - loss
     - accuracy
+
+train2:
+  main: train
+  output-scalars: '(\key): (\value)'
