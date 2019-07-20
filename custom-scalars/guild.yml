@@ -32,4 +32,5 @@ train:
 
 train2:
   main: train
-  output-scalars: '(\key): (\value)'
+  # Default capture pattern (duplicated here for illustration)
+  output-scalars: '^(\key): (\value)'
