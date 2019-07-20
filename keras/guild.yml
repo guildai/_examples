@@ -5,7 +5,7 @@
     train:
       description: Train MLP on MNIST
       main: mnist_mlp
-      flags-no-import: num_classes
+      flags-import-skip: num_classes
       output-scalars: '^(\key): (\value)'
       flags:
         epochs:
