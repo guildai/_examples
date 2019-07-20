@@ -18,7 +18,3 @@ print("step: 2")
 print("loss: 1.234")
 print("accuracy: 0.456")
 print("")
-
-# Stderr works
-sys.stdout.flush() # Ensure previous prints are flushed
-sys.stderr.write("mse: 0.1231\n")
