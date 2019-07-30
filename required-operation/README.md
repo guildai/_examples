@@ -3,7 +3,7 @@
 This example illustrates how an operation can require the output from
 another operation.
 
-Refer to the comments in [guild](guild.yml) for details.
+Refer to the comments in [`guild.yml`](guild.yml) for details.
 
 To run the example, first try to run `train`:
 
@@ -12,9 +12,9 @@ To run the example, first try to run `train`:
 The operation should fail with the message:
 
     Resolving prepared-data dependency
-    guild: run failed because a dependency was not met: could
-    not resolve 'operation:prepare-data' in prepared-data
-    resource: no suitable run for prepare-data
+    guild: run failed because a dependency was not met: could not resolve
+    'operation:prepare-data' in prepared-data resource: no suitable run for
+    prepare-data
 
 This error indicates that `prepare-data` must be run first.
 
@@ -47,10 +47,10 @@ View the train files:
       data/subdir/
       model.json
 
-The mock train files are `model.json` and `checkpoint.h5` (again, not
-real). The other files are links to the files from the `prepare-data`
+The mock train files are `model.json` and `checkpoint.h5` (both
+empty). The other files are links to the files from the `prepare-data`
 run. Note these files are located in a `data` subdirectory. This is
-defined in [guild.yml](guild.yml) using the `path` attribute of the
+defined in [`guild.yml`](guild.yml) using the `path` attribute of the
 operation requirement.
 
 Next, run `train2`:
@@ -68,4 +68,4 @@ And list the train2 files:
 Note that `data.txt` is the sole file from the `prepare-data`
 operation. This is a renamed link to `subdir/data2.txt` from
 `prepare-data`. Again, this is controlled by operation requirement in
-[guild.yml](guild.yml).
+[`guild.yml`](guild.yml).
