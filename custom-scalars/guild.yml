@@ -5,6 +5,11 @@ train:
 
   description: Example using explicit output-scalars
 
+  # Output scalars can be explicitly defined as map of scalar key to
+  # pattern. Use a group in the pattern to capture the scalar value.
+  # The special key `step` is used to set the global step that is
+  # applied to logged scalars.
+
   output-scalars:
     step: 'step: (\value)'
     loss: 'loss: (\value)'
