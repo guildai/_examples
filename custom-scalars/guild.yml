@@ -1,36 +1,36 @@
-# Step 1. Operation named for your script
-#
-# You can alternatively name this `train` (drop the `.py` extension).
-# In this case, you'd run `guild run train`.
-
 train:
-
-  # Step 2. List all of the scalars you want to capture
+  # main module defaults to 'train' because of operation name.
   #
-  # This is a map of scalar key to regular expression.
+  #main: train
+
+  description: Example using explicit output-scalars
 
   output-scalars:
     step: 'step: (\value)'
     loss: 'loss: (\value)'
     accuracy: 'accuracy: (\value)'
 
-  # Step 3. List the columns that you want to compare
-  #
-  # Note that flag names must be prefixed with '=' to
-  # differentiate them from scalar keys.
-  #
-  # This is a painful step and unfortunately required in 0.6.1.
-  # This will be fixed in 0.6.2 with a much less cumbersome
-  # approach.
-
-  compare:
-    - =a
-    - =b
-    - loss step as step
-    - loss
-    - accuracy
-
 train2:
+  description: Example using a generalized scalar pattern
+
   main: train
-  # Default capture pattern (duplicated here for illustration)
+
+  # Specify a pattern with two groups. Guild uses the first group as
+  # key and the second as value. Values must be parseable as numbers.
+  # Guild supports special escape values \key and \value to specify
+  # regex patterns for keys and values respectively. (Note that you
+  # can change the order of the groups to make keys second by using
+  # named groups 'key' and 'value'. This is an unusual case however
+  # and not illustrated here).
+
   output-scalars: '^(\key): (\value)'
+
+train3:
+  description: Example disabling output scalars and using TF event files
+  main: train_with_tensorboardX
+
+  # This example disables output scalars altogether. Note that the
+  # training script uses tensorboardX to log scalars directly. In this
+  # case there's no need for Guild to look at script output at all.
+
+  output-scalars: no

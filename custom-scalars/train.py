@@ -1,8 +1,5 @@
 import sys
 
-a = 1
-b = 2
-
 # Set scalar step using "step: N"
 print("step: 1")
 
