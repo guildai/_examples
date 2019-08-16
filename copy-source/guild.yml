@@ -1,36 +1,51 @@
 default:
   main: guild.pass
+  # By default all text files less than 1M in size are copied
+  # as source code.
 
 all:
   main: guild.pass
-  snapshot-source: '*'
+  # All files, regardless of type, can be copied by specifying the
+  # string '*'. This is equivalent to 'all2' belo.
+  sourcecode: '*'
+
+all2:
+  main: guild.pass
+  # This form is equivalent to that used in 'all' above.
+  sourcecode:
+    - include: '*'
 
 none:
   main: guild.pass
-  snapshot-source:
+  # To exclude all source code copies, set 'sourcecode' to no.
+  sourcecode: no
+
+none2:
+  main: guild.pass
+  # This is an alternative form, which ends up excluding all
+  # files. It's different from 'none' above in that it explicitly
+  # applies the specified pattern to all candidate files. To more
+  # efficiently disable source code copies, use the pattern used in
+  # 'none' above.
+  sourcecode:
     - exclude: '*'
 
 just-py:
   main: guild.pass
-  snapshot-source: '*.py'
+  # To copy only Python source files, use the string '*.py'.
+  sourcecode: '*.py'
 
 a-b:
   main: guild.pass
-  snapshot-source:
+  # To copy only specific files or file patterns, specify specify them
+  # as a list of string patterns. This form implicitly first excludes all
+  # files and then applies the patterns specified.
+  sourcecode:
     - a.py
     - b.py
 
 fancy:
   main: guild.pass
-  snapshot-source:
+  # To control
+  sourcecode:
     - exclude: '*.py'
-    - include: logo.png
-
-_check:
-  steps:
-    - run: default
-    - run: all
-    - run: none
-    - run: just-py
-    - run: a-b
-    - run: fancy

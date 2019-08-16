@@ -1,0 +1,20 @@
+default:
+  main: guild.pass
+  # Illustrates that only text files from the current directory
+  # (subproject) are copied.
+
+from-parent:
+  main: guild.pass
+  # Specifies root to copy from as the parent directory.
+  sourcecode:
+    root: ..
+
+from-parent-exclude-subproject:
+  main: guild.pass
+  # Specifies root to copy from as the parent directory. Excludes the
+  # subproject directory - this can be modified as needed to control
+  # what is copied from the parent directory.
+  sourcecode:
+    root: ..
+    select:
+      - exclude: subproject
