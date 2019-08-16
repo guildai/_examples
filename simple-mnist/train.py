@@ -40,19 +40,19 @@ def init_train():
 
 def init_model():
     global x, y, W, b
-    x = tf.placeholder(tf.float32, [None, 784])
+    x = tf.compat.v1.placeholder(tf.float32, [None, 784])
     W = tf.Variable(tf.zeros([784, 10]))
     b = tf.Variable(tf.zeros([10]))
     y = tf.nn.softmax(tf.matmul(x, W) + b)
 
 def init_train_op():
     global y_, loss, train_op
-    y_ = tf.placeholder(tf.float32, [None, 10])
+    y_ = tf.compat.v1.placeholder(tf.float32, [None, 10])
     loss = tf.reduce_mean(
              -tf.reduce_sum(
-               y_ * tf.log(y),
+               y_ * tf.math.log(y),
                reduction_indices=[1]))
-    train_op = tf.train.GradientDescentOptimizer(0.5).minimize(loss)
+    train_op = tf.compat.v1.train.GradientDescentOptimizer(0.5).minimize(loss)
 
 def init_eval_op():
     global accuracy
@@ -67,39 +67,41 @@ def init_summaries():
     init_summary_writers()
 
 def init_inputs_summary():
-    tf.summary.image("inputs", tf.reshape(x, [-1, 28, 28, 1]), 10)
+    tf.compat.v1.summary.image("inputs", tf.reshape(x, [-1, 28, 28, 1]), 10)
 
 def init_variable_summaries(var, name):
     with tf.name_scope(name):
         mean = tf.reduce_mean(var)
-        tf.summary.scalar("mean", mean)
+        tf.compat.v1.summary.scalar("mean", mean)
         stddev = tf.sqrt(tf.reduce_mean(tf.square(var - mean)))
-        tf.summary.scalar("stddev", stddev)
-        tf.summary.scalar("max", tf.reduce_max(var))
-        tf.summary.scalar("min", tf.reduce_min(var))
-        tf.summary.histogram(name, var)
+        tf.compat.v1.summary.scalar("stddev", stddev)
+        tf.compat.v1.summary.scalar("max", tf.reduce_max(var))
+        tf.compat.v1.summary.scalar("min", tf.reduce_min(var))
+        tf.compat.v1.summary.histogram(name, var)
 
 def init_op_summaries():
-    tf.summary.scalar("loss", loss)
-    tf.summary.scalar("acc", accuracy)
+    tf.compat.v1.summary.scalar("loss", loss)
+    tf.compat.v1.summary.scalar("acc", accuracy)
 
 def init_summary_writers():
     global summaries, train_writer, validate_writer
-    summaries = tf.summary.merge_all()
-    train_writer = tf.summary.FileWriter(FLAGS.rundir, tf.get_default_graph())
-    validate_writer = tf.summary.FileWriter(FLAGS.rundir + "/val")
+    summaries = tf.compat.v1.summary.merge_all()
+    train_writer = tf.compat.v1.summary.FileWriter(
+        FLAGS.rundir, tf.compat.v1.get_default_graph())
+    validate_writer = tf.compat.v1.summary.FileWriter(
+        FLAGS.rundir + "/val")
 
 def init_collections():
-    tf.add_to_collection("inputs", json.dumps({"image": x.name}))
-    tf.add_to_collection("outputs", json.dumps({"prediction": y.name}))
-    tf.add_to_collection("x", x.name)
-    tf.add_to_collection("y_", y_.name)
-    tf.add_to_collection("acc", accuracy.name)
+    tf.compat.v1.add_to_collection("inputs", json.dumps({"image": x.name}))
+    tf.compat.v1.add_to_collection("outputs", json.dumps({"prediction": y.name}))
+    tf.compat.v1.add_to_collection("x", x.name)
+    tf.compat.v1.add_to_collection("y_", y_.name)
+    tf.compat.v1.add_to_collection("acc", accuracy.name)
 
 def init_session():
     global sess
-    sess = tf.Session()
-    sess.run(tf.global_variables_initializer())
+    sess = tf.compat.v1.Session()
+    sess.run(tf.compat.v1.global_variables_initializer())
 
 def train():
     steps = (mnist.train.num_examples // FLAGS.batch_size) * FLAGS.epochs
@@ -133,8 +135,8 @@ def maybe_save_model(step):
 
 def save_model():
     print("Saving trained model")
-    tf.gfile.MakeDirs(FLAGS.rundir + "/model")
-    tf.train.Saver().save(sess, FLAGS.rundir + "/model/export")
+    tf.io.gfile.makedirs(FLAGS.rundir + "/model")
+    tf.compat.v1.train.Saver().save(sess, FLAGS.rundir + "/model/export")
 
 def init_test():
     init_session()
