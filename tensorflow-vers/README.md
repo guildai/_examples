@@ -1,6 +1,6 @@
 # TensorFlow 2.0 example
 
-This example defines [`beginner.py`](beginner.py), which corresponds
+This example defines [`beginner2.py`](beginner2.py), which corresponds
 to the [TensorFlow 2.0 beginner
 example](https://www.tensorflow.org/beta/tutorials/quickstart/beginner).
 

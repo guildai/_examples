@@ -1,3 +1,5 @@
+# See https://www.tensorflow.org/beta/tutorials/quickstart/beginner
+
 import tensorflow as tf
 
 from tensorflow.keras.datasets import mnist
