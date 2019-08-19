@@ -61,8 +61,11 @@ def _init_args(argv):
         default=10, type=int,
         help="Number of epochs to train")
     p.add_argument(
-        "-r", "--lr", default=0.001, type=float,
+        "-r", "--lr", default=0.01, type=float,
         help="Learning rate")
+    p.add_argument(
+        "-b", "--batch-size", default=100, type=int,
+        help="Batch size")
     p.add_argument(
         "-d", "--data-dir",
         help=(
@@ -131,6 +134,7 @@ def _train_model(model, data, args):
     model.fit(
         train_images,
         train_labels,
+        batch_size=args.batch_size,
         epochs=args.epochs,
         callbacks=_train_callbacks(args))
 
