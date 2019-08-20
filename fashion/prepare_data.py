@@ -52,7 +52,7 @@ def _init_args(argv):
 
 def _init_output_dir(args):
     log.info("Output directory is %s", args.output_dir)
-    tf.gfile.MakeDirs(args.output_dir)
+    tf.io.gfile.makedirs(args.output_dir)
 
 def _load_raw_data():
     log.info("Loading raw data")
