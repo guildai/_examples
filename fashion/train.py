@@ -47,12 +47,21 @@ class_names = [
 ]
 
 def main(argv):
+    _try_patch_eager_profiler()
     args = _init_args(argv)
     data = load_data(args.data_dir)
     model = init_model(learning_rate=args.lr)
     _init_output_dirs(args)
     _train_model(model, data, args)
     _test_model(model, data)
+
+def _try_patch_eager_profiler():
+    try:
+        from tensorflow.python.eager import profiler
+    except ImportError:
+        pass
+    else:
+        profiler.maybe_create_event_file = lambda _: None
 
 def _init_args(argv):
     p = argparse.ArgumentParser()
@@ -61,7 +70,7 @@ def _init_args(argv):
         default=10, type=int,
         help="Number of epochs to train")
     p.add_argument(
-        "-r", "--lr", default=0.01, type=float,
+        "-r", "--lr", default=0.04, type=float,
         help="Learning rate")
     p.add_argument(
         "-b", "--batch-size", default=100, type=int,
