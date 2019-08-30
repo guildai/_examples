@@ -1,13 +1,24 @@
 - model: iris
-  description: A DNN classifier for Iris data.
+  description: A DNN classifier for Iris data
   operations:
     train:
-      description: Train the model.
+      description: Train the model
       main: train --model-dir .
       flags:
-        train-steps:
-          description: Number of steps to train.
-          default: 1000
-        batch-size:
-          description: Training batch size.
-          default: 64
+        optimizer:
+          choices:
+            - Adagrad
+            - Adadelta
+            #- AdagradDA
+            - Adam
+            - Ftrl
+            - GradientDescent
+            #- Momentum
+            - ProximalAdagrad
+            - ProximalGradientDescent
+            - RMSProp
+
+      flags-import-skip:
+        - data-dir
+        - model-dir
+      output-scalars: off

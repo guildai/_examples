@@ -1,7 +1,3 @@
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-
 import argparse
 
 import tensorflow as tf
@@ -24,10 +20,27 @@ def main():
 def parse_args():
     """Parse command line arguments."""
     parser = argparse.ArgumentParser()
-    parser.add_argument('--train-steps', default=1000, type=int)
-    parser.add_argument('--batch-size', default=100, type=int)
-    parser.add_argument('--data-dir', default='data')
-    parser.add_argument('--model-dir', default='model')
+    parser.add_argument(
+        '--train-steps', default=1000, type=int,
+        help='Training steps')
+    parser.add_argument(
+        '--batch-size', default=100, type=int,
+        help='Training batch size')
+    parser.add_argument(
+        '--model-dir', default='model',
+        help='Directory to save trained models')
+    parser.add_argument(
+        '--hidden-layers', default=2, type=int,
+        help='Number of hidden layers')
+    parser.add_argument(
+        '--hidden-layer-nodes', default=10, type=int,
+        help='Number of nodes per hidden layer')
+    parser.add_argument(
+        '--optimizer', default='Adagrad',
+        help='Optimizer used for training')
+    parser.add_argument(
+        '--learning-rate', default=0.1, type=float,
+        help='Learning rate')
     return parser.parse_args()
 
 def init_data(_args):
@@ -43,9 +56,14 @@ def init_model(data, args):
     ]
     return tf.estimator.DNNClassifier(
         feature_columns=feature_columns,
-        hidden_units=[10, 10],
+        hidden_units=[args.hidden_layer_nodes] * args.hidden_layers,
         n_classes=3,
+        optimizer=_init_optimizer(args),
         model_dir=args.model_dir)
+
+def _init_optimizer(args):
+    cls = getattr(tf.train, args.optimizer + 'Optimizer')
+    return cls(learning_rate=args.learning_rate)
 
 def train(model, data, args):
     """Train the model."""
