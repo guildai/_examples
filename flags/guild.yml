@@ -1,0 +1,21 @@
+train-with-globals:
+  # main defaults to train_with_globals based on operation name.
+  flags-dest: globals
+
+train-with-args:
+  # main defaults to train_with_args based on operation name.
+  flags-dest: args
+
+train-with-click:
+  # main train_with_click doesn't import argparse and so Guild
+  # mistakenly assumes a `globals` flags dest if we don't specify a
+  # value explicitly here.
+  flags-dest: args
+
+  # Guild does not currently support auto-detecting flags from scripts
+  # that use click. You must define each flag with its defaults here.
+  flags:
+    learning-rate:
+      default: 0.01
+    epochs:
+      default: 10
