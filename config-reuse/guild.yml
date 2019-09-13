@@ -1,0 +1,20 @@
+- config: common-train-flags
+  flags:
+    lr:
+      description: Learning rate
+      default: 0.01
+    batch-size:
+      description: Batch size
+      default: 200
+
+- model: cnn
+  operations:
+    train-mnist:
+      main: train mnist
+      flags:
+        $include: common-train-flags
+
+    train-cifar:
+      main: train cifar
+      flags:
+        $include: common-train-flags
