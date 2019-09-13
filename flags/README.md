@@ -19,8 +19,8 @@ Guild interfaces with a script in one of two ways:
 
 Guild automatically detects which mode it should use by examining your
 script for the use of Python's `argparse` module. If your script
-imports `argparse`, Guild assumes the `arg` mode. If your script does
-not import `argparse`, Guild assumes `globals` mode.
+imports `argparse`, Guild assumes the *arg* mode. If your script does
+not import `argparse`, Guild assumes *globals* mode.
 
 You can specify the mode in a Guild file using the `flags-dest`
 attribute for the applicable operation. When you specify this value in
@@ -29,7 +29,7 @@ assumptions about how to set flags for your script.
 
 This example project illustrate the two
 modes. [train_with_globals.py](train_with_globals.py) uses *globals*
-model and [train_with_args.py](train_with_args.py) uses *args*
+mode and [train_with_args.py](train_with_args.py) uses *args*
 mode. Either script can be run directly.
 
 Using global variables:
