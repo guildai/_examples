@@ -1,5 +1,6 @@
 echo:
   exec: echo ${message}
+  sourcecode: guild.yml
   flags:
     message:
       default: Hi there
