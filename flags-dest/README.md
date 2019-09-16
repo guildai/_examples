@@ -1,4 +1,4 @@
-# Flags
+# Flags Interface
 
 Flags are parameter inputs to scripts. Common flags include *learning
 rate*, *batch size*, and *training epochs* but flags may be used to
