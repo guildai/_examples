@@ -1,0 +1,4 @@
+train:
+  flags:
+    lr: 0.1
+    batch-size: 100
