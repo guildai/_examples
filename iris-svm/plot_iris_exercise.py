@@ -6,7 +6,12 @@ https://scikit-learn.org/stable/auto_examples/exercises/plot_iris_exercise.html
 """
 
 import numpy as np
+
+import matplotlib
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
+
 from sklearn import datasets, svm, metrics
 
 kernel = 'linear'  # choice of linear, rbf, poly
