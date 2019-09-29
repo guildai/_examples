@@ -26,6 +26,7 @@ summary1:
     logdir:
       required: yes
       arg-skip: yes
+  plugins: summary
 
 summary2:
   main: summary2 ${logdir}
@@ -33,3 +34,4 @@ summary2:
     logdir:
       required: yes
       arg-skip: yes
+  plugins: summary
