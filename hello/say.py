@@ -10,7 +10,7 @@ def say(msg):
 
 def say_output():
     say("Latest from-file output:")
-    say(open("from-file/output", "r").read())
+    say(open("from-file/output", "r").read().rstrip())
 
 def say_file(path):
     say(_read_file(path))
