@@ -39,6 +39,7 @@
         message:
           description: Message to print
           default: Hello Guild, from a flag!
+          env-name: MESSAGE
 
     from-file:
       description: >
