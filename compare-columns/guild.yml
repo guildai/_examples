@@ -1,0 +1,5 @@
+test:
+  compare:
+    - val_acc as acc1
+    - val/acc as acc2
+    - acc/val as acc3
