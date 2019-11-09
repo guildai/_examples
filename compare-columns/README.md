@@ -11,7 +11,9 @@ compare:
   ...
 ```
 
-See [guild.yml](guild.yml) for an example.
+See [guild.yml](guild.yml) for an example. The `test` operation is
+configured to show three accuracy values, which are logged by
+[test.py](test.py).
 
 To recreate, create a virtual environment (e.g. by running `guild
 init` in this directory or using Conda or virtualenv). Activate the
