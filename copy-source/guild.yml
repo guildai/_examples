@@ -44,8 +44,13 @@ a-b:
     - a.py
     - b.py
 
-fancy:
+exclude:
   main: guild.pass
-  # To control
   sourcecode:
     - exclude: '*.py'
+
+exclude-dir:
+  main: guild.pass
+  sourcecode:
+    - exclude:
+        dir: subproject
