@@ -5,7 +5,7 @@
     train:
       description: Train MLP on MNIST
       main: mnist_mlp
-      flags-import-skip: num_classes
+      flags-dest: globals
       output-scalars: '^(\key): (\value)'
       flags:
         epochs:
@@ -13,3 +13,4 @@
           default: 5
         batch_size:
           description: Size of each training batch
+          default: 128
