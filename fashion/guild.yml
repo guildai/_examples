@@ -12,9 +12,9 @@
     train:
       description: Train classifier from scratch.
       main: train --data-dir data --log-dir . --checkpoint-dir .
+      flags-import: all
       flags-import-skip: [data-dir, checkpoint-dir, log-dir]
       requires: prepared-data
-      label: epochs=${epochs} lr=${lr}
       objective:
         maximize: epoch_acc
 
