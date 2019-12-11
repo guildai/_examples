@@ -39,3 +39,8 @@ train3:
   # case there's no need for Guild to look at script output at all.
 
   output-scalars: no
+
+train4:
+  description: Example using named groups to capture scalars
+  main: train_single_line_scalars
+  output-scalars: 'epoch (?P<step>\step)  train loss (?P<loss>\value)  val loss (?P<val_loss>\value)'
