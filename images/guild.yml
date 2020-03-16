@@ -1,0 +1,20 @@
+- model: deeplearning_image_classification
+  operations:
+      basic_model:
+          main: deeplearning_image_classification/training
+          flags-import: all 
+          requires:
+          - data
+          - metadata
+  sourcecode:
+      include: "*py" 
+  resources:
+      data: 
+        path: data/images_train/data
+        sources:
+            - "*/*jpg"
+      metadata:
+        path: data
+        sources:
+            - train_metadata.csv
+            - test_metadata.csv
