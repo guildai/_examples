@@ -4,11 +4,4 @@
           main: src/script
           flags-import: all 
           requires:
-          - data
-  sourcecode:
-      include: "*py" 
-  resources:
-      data: 
-        path: data
-        sources:
-            - "*/*jpg"
+              - file: data
