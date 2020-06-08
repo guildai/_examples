@@ -1,7 +1,11 @@
 # Guild AI examples
 
-This repository contains various projects that illustrate using Guild
-AI. Refer to each example for more information.
+**This repository is DEPRECATED and is no longer maintained.**
+
+Guild AI examples are now hosted in the main repository at this
+location:
+
+https://github.com/guildai/guildai/tree/master/examples
 
 ## About Guild AI
 
